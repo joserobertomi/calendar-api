@@ -144,10 +144,16 @@ class HorariosAtendimento(models.Model):
     fim = models.TimeField()
     profissional_fk = models.ForeignKey(Profissional, null=True, on_delete=models.SET_NULL)
 
+    def __str__(self) -> str:
+        return f"{self.dia_da_semana}:{self.inicio}-{self.fim}"
+
 
 class Procedimento(models.Model):
     id = models.BigAutoField(primary_key=True)
     nome = models.CharField(max_length=32)
+
+    def __str__(self) -> str:
+        return self.nome
 
 
 class ProfissionalProcedimento(models.Model):
@@ -155,6 +161,9 @@ class ProfissionalProcedimento(models.Model):
     profissional_fk = models.ForeignKey(Profissional, null=True, on_delete=models.SET_NULL)
     procedimento_fk = models.ForeignKey(Procedimento, null=True, on_delete=models.SET_NULL)
     tempo_duracao = models.DurationField()
+
+    def __str__(self) -> str:
+        return f"{self.procedimento_fk} {self.profissional_fk}"
 
 
 class SolicitacaoAgendamento(models.Model):
@@ -177,3 +186,6 @@ class SolicitacaoAgendamento(models.Model):
     profissional_fk = models.ForeignKey(Profissional, null=True, on_delete=models.SET_NULL)
     procedimento_fk = models.ForeignKey(Procedimento, null=True, on_delete=models.SET_NULL)
     paciente_fk = models.ForeignKey(Paciente, null=True, on_delete=models.SET_NULL)
+
+    def __str__(self) -> str:
+        return f"{self.data_consulta}-{self.paciente_fk}-{self.profissional_fk}"
