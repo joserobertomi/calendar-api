@@ -37,8 +37,8 @@ class Endereco(models.Model):
     cep = models.CharField(max_length=8)
     rua = models.CharField(max_length=32)
     bairro = models.CharField(max_length=32)
-    numero = models.IntegerField(null=True)
-    quadra_lote = models.CharField(null=True, max_length=16)
+    numero = models.IntegerField(null=True, blank=True)
+    quadra_lote = models.CharField(null=True, blank=True, max_length=16)
     cidade = models.CharField(max_length=64)
     estado = models.CharField(max_length=2, choices=BRAZIL_STATES)
     complemento = models.CharField(max_length=32)
@@ -61,8 +61,8 @@ class Paciente(models.Model):
     nome = models.CharField(max_length=32)
     sobrenome = models.CharField(max_length=32)
     nome_social = models.CharField(max_length=32, null=True, blank=True)
-    cpf = models.CharField(max_length=11)
-    rg = models.CharField(max_length=9)
+    cpf = models.CharField(max_length=11, unique=True)
+    rg = models.CharField(max_length=9, unique=True)
     orgao_expeditor = models.CharField(max_length=16)
     sexo = models.CharField(max_length=1, choices=(('F', 'Feminino'), ('M', 'Masculino')))
     celular = models.CharField(max_length=11)
@@ -117,7 +117,7 @@ class Profissional(models.Model):
     id = models.BigAutoField(primary_key=True) 
     nome = models.CharField(max_length=32)
     sobrenome = models.CharField(max_length=32)
-    cpf = models.CharField(max_length=11)
+    cpf = models.CharField(max_length=11, unique=True)
     uf_registro = models.CharField(max_length=2, choices=BRAZIL_STATES)
     n_registro = models.PositiveIntegerField()
     tipo_registro = models.CharField(max_length=8, choices=REGISTER_TYPES)
@@ -130,19 +130,19 @@ class Profissional(models.Model):
 class HorariosAtendimento(models.Model):
     id = models.BigAutoField(primary_key=True)
     WEEK_DAYS = (
-        (1, 'Segunda-feira'),
-        (2, 'Terça-feira'),
-        (3, 'Quarta-feira'),
-        (4, 'Quinta-feira'),
-        (5, 'Sexta-feira'),
-        (6, 'Sábado'),
-        (7, 'Domingo'),
+        ('2a', 'Segunda-feira'),
+        ('3a', 'Terça-feira'),
+        ('4a', 'Quarta-feira'),
+        ('5a', 'Quinta-feira'),
+        ('6a', 'Sexta-feira'),
+        ('Sab', 'Sábado'),
+        ('Dom', 'Domingo'),
     )
 
-    dia_da_semana = models.SmallIntegerField(choices=WEEK_DAYS)
+    dia_da_semana = models.CharField(choices=WEEK_DAYS, max_length=3)
     inicio = models.TimeField()
     fim = models.TimeField()
-    profissional_fk = models.ForeignKey(Profissional, null=True, on_delete=models.SET_NULL)
+    profissional_fk = models.ForeignKey(Profissional, null=True, on_delete=models.CASCADE)
 
     def __str__(self) -> str:
         return f"{self.dia_da_semana}:{self.inicio}-{self.fim}"
@@ -158,7 +158,7 @@ class Procedimento(models.Model):
 
 class ProfissionalProcedimento(models.Model):
     id = models.BigAutoField(primary_key=True)
-    profissional_fk = models.ForeignKey(Profissional, null=True, on_delete=models.SET_NULL)
+    profissional_fk = models.ForeignKey(Profissional, null=True, on_delete=models.CASCADE)
     procedimento_fk = models.ForeignKey(Procedimento, null=True, on_delete=models.SET_NULL)
     tempo_duracao = models.DurationField()
 
@@ -178,8 +178,8 @@ class SolicitacaoAgendamento(models.Model):
     id = models.BigAutoField(primary_key=True)
     data_consulta = models.DateField()
     hora_inicio_consulta = models.TimeField()
-    hora_fim_consulta = models.TimeField()
-    envio_confirmacao = models.DateTimeField()
+    hora_fim_consulta = models.TimeField(blank=True, null=True, default=None)
+    envio_confirmacao = models.DateTimeField(blank=True, null=True)
     confirmacao_profissional = models.DateTimeField(null=True, default=None)
     confirmacao_paciente = models.DateTimeField(null=True, default=None)
     status = models.SmallIntegerField(choices=STATUS_OPTIONS, default=1)
