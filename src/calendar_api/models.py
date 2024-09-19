@@ -68,8 +68,8 @@ class Paciente(models.Model):
     celular = models.CharField(max_length=11)
     email = models.EmailField()
     nascimento = models.DateField()
-    endereco_fk = models.ForeignKey(Endereco, null=True, on_delete=models.SET_NULL)
-    convenio_fk = models.ForeignKey(Convenio, null=True, on_delete=models.SET_NULL)
+    endereco_fk = models.ForeignKey(Endereco, null=True, blank=True, on_delete=models.SET_NULL)
+    convenio_fk = models.ForeignKey(Convenio, null=True, blank=True, on_delete=models.SET_NULL)
 
     def __str__(self) -> str:
         return f"{self.nome_social if self.nome_social else self.nome} {self.sobrenome}"
@@ -121,7 +121,7 @@ class Profissional(models.Model):
     uf_registro = models.CharField(max_length=2, choices=BRAZIL_STATES)
     n_registro = models.PositiveIntegerField()
     tipo_registro = models.CharField(max_length=8, choices=REGISTER_TYPES)
-    email = models.EmailField()
+    email = models.EmailField(unique=True)
 
     def __str__(self) -> str:
         return f"{self.nome} {self.sobrenome}"
@@ -179,7 +179,7 @@ class SolicitacaoAgendamento(models.Model):
     data_consulta = models.DateField()
     hora_inicio_consulta = models.TimeField()
     hora_fim_consulta = models.TimeField(blank=True, null=True, default=None)
-    envio_confirmacao = models.DateTimeField(blank=True, null=True)
+    envio_confirmacao_paciente = models.DateTimeField(blank=True, null=True)
     confirmacao_profissional = models.DateTimeField(null=True, default=None)
     confirmacao_paciente = models.DateTimeField(null=True, default=None)
     status = models.SmallIntegerField(choices=STATUS_OPTIONS, default=1)
