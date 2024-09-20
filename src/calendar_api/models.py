@@ -1,4 +1,5 @@
 from django.db import models
+from .validators import *
 
 # Create your models here.
 
@@ -34,14 +35,14 @@ class Endereco(models.Model):
     )
     
     id = models.BigAutoField(primary_key=True)
-    cep = models.CharField(max_length=8)
-    rua = models.CharField(max_length=32)
-    bairro = models.CharField(max_length=32)
-    numero = models.IntegerField(null=True, blank=True)
-    quadra_lote = models.CharField(null=True, blank=True, max_length=16)
-    cidade = models.CharField(max_length=64)
-    estado = models.CharField(max_length=2, choices=BRAZIL_STATES)
-    complemento = models.CharField(max_length=32)
+    cep = models.CharField(max_length=8, validators=[validate_cep])
+    rua = models.CharField(max_length=32, validators=[validade_char_lower_than_32])
+    bairro = models.CharField(max_length=32, validators=[validade_char_lower_than_32])
+    numero = models.IntegerField(null=True, blank=True, validators=[validate_integer])
+    quadra_lote = models.CharField(null=True, blank=True, max_length=16, validators=[validade_char_lower_than_16])
+    cidade = models.CharField(max_length=32, validators=[validade_char_lower_than_32])
+    estado = models.CharField(max_length=2, choices=BRAZIL_STATES, validators=[validate_state])
+    complemento = models.CharField(max_length=32, validators=[validade_char_lower_than_32])
 
     def __str__(self) -> str:
         return (f"{self.cep}, {self.cidade}, {self.estado}")
@@ -49,8 +50,8 @@ class Endereco(models.Model):
 
 class Convenio(models.Model):
     id = models.BigAutoField(primary_key=True)
-    nome = models.CharField(max_length=32)
-    inscricao = models.CharField(max_length=64)
+    nome = models.CharField(max_length=32, validators=[validade_char_lower_than_32])
+    inscricao = models.CharField(max_length=64, validators=[validade_char_lower_than_64])
 
     def __str__(self) -> str:
         return self.nome
@@ -58,16 +59,16 @@ class Convenio(models.Model):
 
 class Paciente(models.Model): 
     id = models.BigAutoField(primary_key=True) 
-    nome = models.CharField(max_length=32)
-    sobrenome = models.CharField(max_length=32)
-    nome_social = models.CharField(max_length=32, null=True, blank=True)
-    cpf = models.CharField(max_length=11, unique=True)
-    rg = models.CharField(max_length=9, unique=True)
-    orgao_expeditor = models.CharField(max_length=16)
-    sexo = models.CharField(max_length=1, choices=(('F', 'Feminino'), ('M', 'Masculino')))
-    celular = models.CharField(max_length=11)
+    nome = models.CharField(max_length=32, validators=[validade_char_lower_than_32])
+    sobrenome = models.CharField(max_length=32, validators=[validade_char_lower_than_32])
+    nome_social = models.CharField(max_length=32, null=True, blank=True, validators=[validade_char_lower_than_32])
+    cpf = models.CharField(max_length=11, unique=True, validators=[validate_cpf])
+    rg = models.CharField(max_length=9, unique=True, validators=[validate_rg])
+    orgao_expeditor = models.CharField(max_length=16, validators=[validade_char_lower_than_16])
+    sexo = models.CharField(max_length=1, choices=(('F', 'Feminino'), ('M', 'Masculino')), validators=[validate_sex])
+    celular = models.CharField(max_length=11, validators=[validate_phone])
     email = models.EmailField()
-    nascimento = models.DateField()
+    nascimento = models.DateField(validators=[validate_date_format, validate_date_not_130_years_later, validate_date_not_newer_than_today])
     endereco_fk = models.ForeignKey(Endereco, null=True, blank=True, on_delete=models.SET_NULL)
     convenio_fk = models.ForeignKey(Convenio, null=True, blank=True, on_delete=models.SET_NULL)
 
@@ -115,12 +116,12 @@ class Profissional(models.Model):
     )
     
     id = models.BigAutoField(primary_key=True) 
-    nome = models.CharField(max_length=32)
-    sobrenome = models.CharField(max_length=32)
-    cpf = models.CharField(max_length=11, unique=True)
-    uf_registro = models.CharField(max_length=2, choices=BRAZIL_STATES)
-    n_registro = models.PositiveIntegerField()
-    tipo_registro = models.CharField(max_length=8, choices=REGISTER_TYPES)
+    nome = models.CharField(max_length=32, validators=[validade_char_lower_than_32])
+    sobrenome = models.CharField(max_length=32, validators=[validade_char_lower_than_32])
+    cpf = models.CharField(max_length=11, unique=True, validators=[validate_cpf])
+    uf_registro = models.CharField(max_length=2, choices=BRAZIL_STATES, validators=[validate_state])
+    n_registro = models.PositiveIntegerField(validators=[validate_integer, validate_grater_than_1])
+    tipo_registro = models.CharField(max_length=8, choices=REGISTER_TYPES, validators=[validate_registers])
     email = models.EmailField(unique=True)
 
     def __str__(self) -> str:
@@ -139,9 +140,9 @@ class HorariosAtendimento(models.Model):
         ('Dom', 'Domingo'),
     )
 
-    dia_da_semana = models.CharField(choices=WEEK_DAYS, max_length=3)
-    inicio = models.TimeField()
-    fim = models.TimeField()
+    dia_da_semana = models.CharField(choices=WEEK_DAYS, max_length=3, validators=[validate_days_of_week])
+    inicio = models.TimeField(validators=[validate_time_format])
+    fim = models.TimeField(validators=[validate_time_format])
     profissional_fk = models.ForeignKey(Profissional, null=True, on_delete=models.CASCADE)
 
     def __str__(self) -> str:
@@ -150,7 +151,7 @@ class HorariosAtendimento(models.Model):
 
 class Procedimento(models.Model):
     id = models.BigAutoField(primary_key=True)
-    nome = models.CharField(max_length=32)
+    nome = models.CharField(max_length=32, validators=[validade_char_lower_than_32])
 
     def __str__(self) -> str:
         return self.nome
@@ -160,7 +161,7 @@ class ProfissionalProcedimento(models.Model):
     id = models.BigAutoField(primary_key=True)
     profissional_fk = models.ForeignKey(Profissional, null=True, on_delete=models.CASCADE)
     procedimento_fk = models.ForeignKey(Procedimento, null=True, on_delete=models.SET_NULL)
-    tempo_duracao = models.DurationField()
+    tempo_duracao = models.DurationField(validators=validate_duration)
 
     def __str__(self) -> str:
         return f"{self.procedimento_fk} {self.profissional_fk}"
@@ -176,13 +177,13 @@ class SolicitacaoAgendamento(models.Model):
     )
     
     id = models.BigAutoField(primary_key=True)
-    data_consulta = models.DateField()
-    hora_inicio_consulta = models.TimeField()
-    hora_fim_consulta = models.TimeField(blank=True, null=True, default=None)
-    envio_confirmacao_paciente = models.DateTimeField(blank=True, null=True)
-    confirmacao_profissional = models.DateTimeField(null=True, default=None)
-    confirmacao_paciente = models.DateTimeField(null=True, default=None)
-    status = models.SmallIntegerField(choices=STATUS_OPTIONS, default=1)
+    data_consulta = models.DateField(validators=[validate_date_format])
+    hora_inicio_consulta = models.TimeField(validators=[validate_time_format])
+    hora_fim_consulta = models.TimeField(blank=True, null=True, default=None) # * CALCULADO
+    envio_confirmacao_paciente = models.DateTimeField(blank=True, null=True) # * CALCULADO
+    confirmacao_profissional = models.DateTimeField(null=True, default=None) # * ATRIBUIDO PELO SISTEMA 
+    confirmacao_paciente = models.DateTimeField(null=True, default=None) # * ATRIBUIDO PELO SISTEMA
+    status = models.SmallIntegerField(choices=STATUS_OPTIONS, default=1) # * ATRIBUIDO PELO SISTEMA
     profissional_fk = models.ForeignKey(Profissional, null=True, on_delete=models.SET_NULL)
     procedimento_fk = models.ForeignKey(Procedimento, null=True, on_delete=models.SET_NULL)
     paciente_fk = models.ForeignKey(Paciente, null=True, on_delete=models.SET_NULL)
