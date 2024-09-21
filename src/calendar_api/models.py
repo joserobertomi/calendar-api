@@ -1,5 +1,8 @@
 from django.db import models
 from .validators import *
+from django.core.exceptions import ValidationError
+from django.utils.translation import gettext_lazy as _
+from datetime import datetime
 
 # Create your models here.
 
@@ -44,8 +47,19 @@ class Endereco(models.Model):
     estado = models.CharField(max_length=2, choices=BRAZIL_STATES, validators=[validate_state])
     complemento = models.CharField(max_length=32, validators=[validade_char_lower_than_32])
 
+    def clean(self):
+        # Chama a implementação original da superclasse
+        super().clean()
+        # Verifica se o tempo de início é posterior ao de fim
+        if not self.numero and not self.quadra_lote:
+            raise ValidationError(
+                _("ERROR - Um dos campos numero ou quadra e lote deve existir")
+            )
+
     def __str__(self) -> str:
-        return (f"{self.cep}, {self.cidade}, {self.estado}")
+        if self.numero:
+            return (f"{self.numero}, {self.bairro}, {self.cidade}")
+        return (f"{self.quadra_lote}, {self.bairro}, {self.cidade}")
 
 
 class Convenio(models.Model):
@@ -65,10 +79,10 @@ class Paciente(models.Model):
     cpf = models.CharField(max_length=11, unique=True, validators=[validate_cpf])
     rg = models.CharField(max_length=9, unique=True, validators=[validate_rg])
     orgao_expeditor = models.CharField(max_length=16, validators=[validade_char_lower_than_16])
-    sexo = models.CharField(max_length=1, choices=(('F', 'Feminino'), ('M', 'Masculino')), validators=[validate_sex])
+    sexo = models.CharField(max_length=1, choices=(('F', 'Feminino'), ('M', 'Masculino')))
     celular = models.CharField(max_length=11, validators=[validate_phone])
     email = models.EmailField()
-    nascimento = models.DateField(validators=[validate_date_format, validate_date_not_130_years_later, validate_date_not_newer_than_today])
+    nascimento = models.DateField(validators=[validate_date_not_130_years_later, validate_date_not_newer_than_today])
     endereco_fk = models.ForeignKey(Endereco, null=True, blank=True, on_delete=models.SET_NULL)
     convenio_fk = models.ForeignKey(Convenio, null=True, blank=True, on_delete=models.SET_NULL)
 
@@ -141,12 +155,22 @@ class HorariosAtendimento(models.Model):
     )
 
     dia_da_semana = models.CharField(choices=WEEK_DAYS, max_length=3, validators=[validate_days_of_week])
-    inicio = models.TimeField(validators=[validate_time_format])
-    fim = models.TimeField(validators=[validate_time_format])
+    inicio = models.TimeField()
+    fim = models.TimeField()
     profissional_fk = models.ForeignKey(Profissional, null=True, on_delete=models.CASCADE)
 
+    def clean(self):
+        # Chama a implementação original da superclasse
+        super().clean()
+
+        # Verifica se o tempo de início é posterior ao de fim
+        if self.inicio and self.fim and self.inicio > self.fim:
+            raise ValidationError(
+                _("ERROR - The finish time must be after the start time.")
+            )
+
     def __str__(self) -> str:
-        return f"{self.dia_da_semana}:{self.inicio}-{self.fim}"
+        return f"{self.dia_da_semana}: {self.inicio}-{self.fim}"
 
 
 class Procedimento(models.Model):
@@ -161,7 +185,7 @@ class ProfissionalProcedimento(models.Model):
     id = models.BigAutoField(primary_key=True)
     profissional_fk = models.ForeignKey(Profissional, null=True, on_delete=models.CASCADE)
     procedimento_fk = models.ForeignKey(Procedimento, null=True, on_delete=models.SET_NULL)
-    tempo_duracao = models.DurationField(validators=validate_duration)
+    tempo_duracao = models.DurationField()
 
     def __str__(self) -> str:
         return f"{self.procedimento_fk} {self.profissional_fk}"
@@ -177,16 +201,16 @@ class SolicitacaoAgendamento(models.Model):
     )
     
     id = models.BigAutoField(primary_key=True)
-    data_consulta = models.DateField(validators=[validate_date_format])
-    hora_inicio_consulta = models.TimeField(validators=[validate_time_format])
+    data_consulta = models.DateField()
+    hora_inicio_consulta = models.TimeField()
     hora_fim_consulta = models.TimeField(blank=True, null=True, default=None) # * CALCULADO
     envio_confirmacao_paciente = models.DateTimeField(blank=True, null=True) # * CALCULADO
-    confirmacao_profissional = models.DateTimeField(null=True, default=None) # * ATRIBUIDO PELO SISTEMA 
-    confirmacao_paciente = models.DateTimeField(null=True, default=None) # * ATRIBUIDO PELO SISTEMA
+    confirmacao_profissional = models.DateTimeField(null=True, blank=True, default=None) # * ATRIBUIDO PELO SISTEMA 
+    confirmacao_paciente = models.DateTimeField(null=True, blank=True, default=None) # * ATRIBUIDO PELO SISTEMA
     status = models.SmallIntegerField(choices=STATUS_OPTIONS, default=1) # * ATRIBUIDO PELO SISTEMA
     profissional_fk = models.ForeignKey(Profissional, null=True, on_delete=models.SET_NULL)
     procedimento_fk = models.ForeignKey(Procedimento, null=True, on_delete=models.SET_NULL)
     paciente_fk = models.ForeignKey(Paciente, null=True, on_delete=models.SET_NULL)
 
     def __str__(self) -> str:
-        return f"{self.data_consulta}-{self.paciente_fk}-{self.profissional_fk}"
+        return f"{self.data_consulta} - {self.paciente_fk} - {self.profissional_fk}"

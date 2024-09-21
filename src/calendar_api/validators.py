@@ -49,16 +49,16 @@ def validate_cpf(cpf: str) -> str:
 def validate_cep(value) -> str:
     if not match(r'^\d{8}$', value):
         raise ValidationError(
-            _('%(cep)s nao esta no formato numero 12345678'),
+            _('%(value)s nao esta no formato numero 12345678'),
             params={'value': value},
         )
     return str(value)
 
 
 def validate_rg(value) -> str:
-    if not match(r'^\d{9}$', value):
+    if not match(r'^\d{1,9}$', value):
         raise ValidationError(
-            _('%(cep)s nao esta no formato numerico 123456789'),
+            _('%(value)s nao esta no formato numerico 123456789'),
             params={'value': value},
         )
     return str(value)
@@ -67,7 +67,7 @@ def validate_rg(value) -> str:
 def validate_phone(value) -> str:
     if not match(r'^\d{11}$', value):
         raise ValidationError(
-            _('%(cep)s nao esta no formato numerico ddd+numero'),
+            _('%(value)s nao esta no formato numerico ddd+numero'),
             params={'value': value},
         )
     return str(value)
@@ -154,35 +154,6 @@ def validate_registers(value) -> str:
     return str(value)
 
 
-def validate_time_format(value) -> str:
-    time_regex = r"^([01][0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9])$"
-    if not match(time_regex, value):
-        raise ValidationError(
-            _('%(value)s não é um formato de tempo válido. O formato correto é HH:MM:SS.'), 
-            params={'value': value},
-        )
-    return str(value)
-
-
-def validate_date_format(value) -> str:
-    time_regex = r"^\d{2}/\d{2}/\d{4}$"
-    if not match(time_regex, value):
-        raise ValidationError(
-            _('%(value)s não é um formato de data válido. O formato correto é dd/mm/yyyy'), 
-            params={'value': value},
-        )
-    return str(value)
-
-
-def validate_sex(value) -> str:
-    if not 'M' or 'm':
-        raise ValidationError(
-            _('%(value)s nao eh um sexo valido'), 
-            params={'value': value},
-        )
-    return str(value)
-
-
 def validate_date_not_newer_than_today(value):
     if value > date.today():
         raise ValidationError("Data nao pode ser mais recente que hoje.")  
@@ -190,7 +161,7 @@ def validate_date_not_newer_than_today(value):
 
 
 def validate_date_not_130_years_later(value):
-    if value > date.today() - timedelta(days=365*130):
+    if value < date.today() - timedelta(days=365*130):
         raise ValidationError(
             _('%(value)s Data nao pode ser maior de 130 anos de hoje.'),
             params={'value': value},
@@ -213,19 +184,4 @@ def validate_date_not_5_years_newer(value):
             _('Data nao pode ser maior de 10 anos de hoje.'), 
             params={'value': value}
         )
-    return value
-
-
-def validate_duration(value) -> str:
-    time_regex = r"^\d{2}:\d{2}:\d{2}$"
-    if match(time_regex, value):
-        
-        hours, minutes, seconds = map(int, value.split(':'))
-        duration = timedelta(hours=hours, minutes=minutes, seconds=seconds)
-        
-        return duration  
-    if value.total_seconds() < 0:
-        raise ValidationError(_('Duration cannot be negative'))
-    elif value.total_seconds() == 0:
-        raise ValidationError(_('Duration cannot be zero'))
     return value
