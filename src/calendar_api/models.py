@@ -75,7 +75,6 @@ class Paciente(models.Model):
     id = models.BigAutoField(primary_key=True) 
     nome = models.CharField(max_length=32, validators=[validade_char_lower_than_32])
     sobrenome = models.CharField(max_length=32, validators=[validade_char_lower_than_32])
-    nome_social = models.CharField(max_length=32, null=True, blank=True, validators=[validade_char_lower_than_32])
     cpf = models.CharField(max_length=11, unique=True, validators=[validate_cpf])
     rg = models.CharField(max_length=9, unique=True, validators=[validate_rg])
     orgao_expeditor = models.CharField(max_length=16, validators=[validade_char_lower_than_16])
@@ -87,7 +86,7 @@ class Paciente(models.Model):
     convenio_fk = models.ForeignKey(Convenio, null=True, blank=True, on_delete=models.SET_NULL)
 
     def __str__(self) -> str:
-        return f"{self.nome_social if self.nome_social else self.nome} {self.sobrenome}"
+        return f"{self.nome} {self.sobrenome}"
 
 
 class Profissional(models.Model):
@@ -175,8 +174,7 @@ class HorariosAtendimento(models.Model):
 
 class Procedimento(models.Model):
     id = models.BigAutoField(primary_key=True)
-    nome = models.CharField(max_length=32, validators=[validade_char_lower_than_32])
-
+    nome = models.CharField(max_length=32, validators=[validade_char_lower_than_32], unique=True)
     def __str__(self) -> str:
         return self.nome
 
@@ -203,14 +201,13 @@ class SolicitacaoAgendamento(models.Model):
     id = models.BigAutoField(primary_key=True)
     data_consulta = models.DateField()
     hora_inicio_consulta = models.TimeField()
-    hora_fim_consulta = models.TimeField(blank=True, null=True, default=None) # * CALCULADO
-    envio_confirmacao_paciente = models.DateTimeField(blank=True, null=True) # * CALCULADO
-    confirmacao_profissional = models.DateTimeField(null=True, blank=True, default=None) # * ATRIBUIDO PELO SISTEMA 
-    confirmacao_paciente = models.DateTimeField(null=True, blank=True, default=None) # * ATRIBUIDO PELO SISTEMA
-    status = models.SmallIntegerField(choices=STATUS_OPTIONS, default=1) # * ATRIBUIDO PELO SISTEMA
+    #hora_fim_consulta = models.TimeField(blank=True, null=True, default=None) # * PROPERTY
+    #envio_confirmacao_paciente = models.DateTimeField(blank=True, null=True) # * PROPERTY
     profissional_fk = models.ForeignKey(Profissional, null=True, on_delete=models.SET_NULL)
     procedimento_fk = models.ForeignKey(Procedimento, null=True, on_delete=models.SET_NULL)
     paciente_fk = models.ForeignKey(Paciente, null=True, on_delete=models.SET_NULL)
 
+    # TODO fazer o hora_fim_consulta e o envio_confirmacao_paciente como propertys da classe 
+    
     def __str__(self) -> str:
         return f"{self.data_consulta} - {self.paciente_fk} - {self.profissional_fk}"
