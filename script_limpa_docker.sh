@@ -16,5 +16,5 @@ docker image rm --force $(sed 's/^sha256://' <<< $(docker inspect --format="{{.I
 docker rm --force --volumes $containers
 
 # Remove os volumes especificos 
-docker volume rm calendar-api_local_postgres_data calendar-api_local_postgres_data_backups
-#docker compose up
+#docker volume rm calendar-api_local_postgres_data calendar-api_local_postgres_data_backups
+docker compose up
