@@ -207,7 +207,15 @@ class SolicitacaoAgendamento(models.Model):
     procedimento_fk = models.ForeignKey(Procedimento, null=True, on_delete=models.SET_NULL)
     paciente_fk = models.ForeignKey(Paciente, null=True, on_delete=models.SET_NULL)
 
-    # TODO fazer o hora_fim_consulta e o envio_confirmacao_paciente como propertys da classe 
+    # TODO fazer o hora_fim_consulta como propertys da classe
+    @property
+    def hora_fim_consulta(self):
+        duracao = ProfissionalProcedimento.objects.filter(
+            profissional_fk=self.profissional_fk, 
+            procedimento_fk=self.procedimento_fk,
+        ).values('tempo_duracao').first()['tempo_duracao']
+        
+        return self.hora_inicio_consulta + duracao
     
     def __str__(self) -> str:
         return f"{self.data_consulta} - {self.paciente_fk} - {self.profissional_fk}"
