@@ -19,7 +19,7 @@ from django.contrib import admin
 from django.conf.urls.static import static
 from django.conf import settings
 from django.contrib.auth import views as auth_views
-
+from calendar_api.urls import router as router_app
 from myapp.views import ShowHelloWorld
 
 
@@ -27,6 +27,9 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^$', ShowHelloWorld.as_view(), name='site'),
     path('calendar_api/', include('calendar_api.urls')),
+    path('calendar_api/', include(router_app.urls)),
+    path('calendar_api-auth/', include('rest_framework.urls', namespace='rest_framework')),
+    path('api/', include('djoser.urls')),
 ]
 # urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 # urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

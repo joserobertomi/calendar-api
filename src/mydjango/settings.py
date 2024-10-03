@@ -41,6 +41,8 @@ INSTALLED_APPS = [
     'myapp.apps.MyappConfig',
     'celery',
     'bootstrap5',
+    'rest_framework', 
+    'djoser', 
 ]
 
 MIDDLEWARE = [
@@ -52,6 +54,31 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.SessionAuthentication', 
+        'rest_framework_simplejwt.authentication.JWTAuthentication', 
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticatedOrReadOnly',
+        'rest_framework.permissions.IsAuthenticated',
+    ],
+}
+
+AUTH_COOKIE = 'access'
+AUTH_COOKIE_MAX_AGE = 86400 # 60segundos * 60segundos * 24 = 86400 segundos = 24 horas 
+AUTH_COOKIE_HTTP_ONLY = True
+AUTH_COOKIE_PATH = '/' # avalia os cookies em qualquer endpoint
+
+DJOSER = {
+    'PASSWORD_RESET_CONFIRM_URL': 'password-reset/{uid}/{token}',
+    'SEND_ACTIVATION_EMAIL': False,
+    'USER_CREATE_PASSWORD_RETYPE': False,
+    'PASSWORD_RESET_CONFIRM_RETYPE': False,
+    'TOKEN_MODEL': None,
+}
 
 ROOT_URLCONF = 'mydjango.urls'
 

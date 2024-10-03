@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Endereco, Convenio, Paciente, SolicitacaoAgendamento, Profissional, ProfissionalProcedimento, Procedimento, HorariosAtendimento
+from .models import Endereco, Convenio, Paciente, SolicitacaoAgendamento, Profissional, ProfissionalProcedimento, Procedimento, HorariosAtendimento, Prontuario
 
 
 class EnderecoSerializer(serializers.ModelSerializer):
@@ -47,4 +47,10 @@ class ProcedimentoSerializer(serializers.ModelSerializer):
 class HorariosAtendimentoSerializer(serializers.ModelSerializer):
     class Meta:
         model = HorariosAtendimento
+        fields = '__all__'
+
+
+class ProntuarioSerializer(serializers.ModelSerializer): 
+    class Meta:
+        model = Prontuario
         fields = '__all__'
