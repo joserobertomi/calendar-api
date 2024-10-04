@@ -26,9 +26,9 @@ from myapp.views import ShowHelloWorld
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^$', ShowHelloWorld.as_view(), name='site'),
-    path('calendar_api/', include('calendar_api.urls')),
-    path('calendar_api/', include(router_app.urls)),
-    path('calendar_api-auth/', include('rest_framework.urls', namespace='rest_framework')),
+    path('api/', include('calendar_api.urls')),
+    path('api/', include(router_app.urls)),
+    path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     path('api/', include('djoser.urls')),
 ]
 # urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

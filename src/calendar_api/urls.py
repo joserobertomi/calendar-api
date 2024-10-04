@@ -20,13 +20,13 @@ from .views import (
 router = DefaultRouter()
 
 # Registra os ViewSets no roteador
-router.register(r'enderecos', EnderecoViewSet)
-router.register(r'convenios', ConvenioViewSet)
-router.register(r'pacientes', PacienteViewSet)
+router.register(r'endereco', EnderecoViewSet)
+router.register(r'convenio', ConvenioViewSet)
+router.register(r'paciente', PacienteViewSet)
 router.register(r'solicitacoes-agendamento', SolicitacaoAgendamentoViewSet)
-router.register(r'profissionais', ProfissionalViewSet)
-router.register(r'profissionais-procedimentos', ProfissionalProcedimentoViewSet)
-router.register(r'procedimentos', ProcedimentoViewSet)
+router.register(r'profissionai', ProfissionalViewSet)
+router.register(r'profissional-procedimento', ProfissionalProcedimentoViewSet)
+router.register(r'procedimento', ProcedimentoViewSet)
 router.register(r'horarios-atendimento', HorariosAtendimentoViewSet)
 router.register(r'prontuario', ProntuarioViewSet)
 
