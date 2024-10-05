@@ -68,7 +68,7 @@ REST_FRAMEWORK = {
 }
 
 AUTH_COOKIE = 'access'
-AUTH_COOKIE_MAX_AGE = 86400 # 60segundos * 60segundos * 24 = 86400 segundos = 24 horas 
+AUTH_COOKIE_MAX_AGE = 86400000 # 1000s * 60segundos * 60segundos * 24 = 86400 segundos = 24 horas 
 AUTH_COOKIE_HTTP_ONLY = True
 AUTH_COOKIE_PATH = '/' # avalia os cookies em qualquer endpoint
 
