@@ -196,4 +196,321 @@ class ApiTestCase(APITestCase):
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, 201)
 
+    # Fluxos de erros
+    def test_erro_create_convenio_sem_convenio(self):
+        url = "/api/convenio/"
+        data = {
+            "inscricao": "0123456"
+        }
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, 400)
+
+    def test_erro_create_convenio_sem_inscricao(self):
+        url = "/api/convenio/"
+        data = {
+            "nome": "Real Grandeza"
+        }
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, 400)
+
+    def test_erro_create_endereco_cep_invalido(self):
+        url = "/api/endereco/"
+        data = {
+            "cep": "74II504AA",
+            "rua": "Rua 1",
+            "bairro": "Setor Oeste",
+            "numero": 800,
+            "cidade": "Goiania",
+            "estado": "GO",
+            "complemento": "Ap 1202"
+        }
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, 400)
+
+    def test_erro_create_endereco_sem_numero_e_sem_quadra_lote(self):
+        url = "/api/endereco/"
+        data = {
+            "cep": "74115040",
+            "rua": "Rua 1",
+            "bairro": "Setor Oeste",
+            "cidade": "Goiania",
+            "estado": "GO",
+            "complemento": "Ap 1202"
+        }
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, 400)
+
+    def test_erro_create_endereco_sem_cidade(self):
+        url = "/api/endereco/"
+        data = {
+            "cep": "74115040",
+            "rua": "Rua 1",
+            "bairro": "Setor Oeste",
+            "numero": 800,
+            "estado": "GO",
+            "complemento": "Ap 1202"
+        }
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, 400)
+
+    def test_erro_create_endereco_estado_invalido(self):
+        url = "/api/endereco/"
+        data = {
+            "id": 1,
+            "cep": "74115040",
+            "rua": "Rua 1",
+            "bairro": "Setor Oeste",
+            "numero": 800,
+            "cidade": "Goiania",
+            "estado": "PO",
+            "complemento": "Ap 1202"
+        }
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, 400)
     
+    def test_erro_create_profissional_sem_nome(self):
+        url = "/api/profissional/"
+        data = {
+            "sobrenome": "Mendonça Inacio",
+            "cpf": "06733563100",
+            "uf_registro": "GO",
+            "n_registro": 1,
+            "tipo_registro": "CRM",
+            "email": "joserobertomi@outlook.com"
+        }
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, 400)
+
+    def test_erro_create_profissional_com_cpf_invalido(self):
+        url = "/api/profissional/"
+        data = {
+            "nome": "Jose Roberto", 
+            "sobrenome": "Mendonça Inacio",
+            "cpf": "06733563101",
+            "uf_registro": "GO",
+            "n_registro": 1,
+            "tipo_registro": "CRM",
+            "email": "joserobertomi@outlook.com"
+        }
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, 400)
+
+    def test_erro_create_profissional_sem_n_registro(self):
+        url = "/api/profissional/"
+        data = {
+            "nome": "Jose Roberto", 
+            "sobrenome": "Mendonça Inacio",
+            "cpf": "06733563101",
+            "uf_registro": "GO",
+            "tipo_registro": "CRM",
+            "email": "joserobertomi@outlook.com"
+        }
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, 400)
+
+    def test_erro_create_profissional_com_n_registro_invalido(self):
+        url = "/api/profissional/"
+        data = {
+            "nome": "Jose Roberto", 
+            "sobrenome": "Mendonça Inacio",
+            "cpf": "06733563101",
+            "uf_registro": "GO",
+            "n_registro": "A",
+            "tipo_registro": "CRM",
+            "email": "joserobertomi@outlook.com"
+        }
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, 400)
+
+    def test_erro_create_profissional_com_tipo_registro_invalido(self):
+        url = "/api/profissional/"
+        data = {
+            "nome": "Jose Roberto", 
+            "sobrenome": "Mendonça Inacio",
+            "cpf": "06733563101",
+            "uf_registro": "GO",
+            "n_registro": "A",
+            "tipo_registro": "CRMM",
+            "email": "joserobertomi@outlook.com"
+        }
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, 400)
+
+    def test_erro_create_profissional_sem_email(self):
+        url = "/api/profissional/"
+        data = {
+            "nome": "Jose Roberto", 
+            "sobrenome": "Mendonça Inacio",
+            "cpf": "06733563101",
+            "uf_registro": "GO",
+            "n_registro": "A",
+            "tipo_registro": "CRM"
+        }
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, 400)
+
+    def test_erro_create_procedimento_sem_dado(self):
+        url = "/api/procedimento/"
+        data = {}
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, 400)
+    
+    def test_erro_create_solicitacao_agendamento_formato_data_invalido(self):
+
+        url = "/api/solicitacoes-agendamento/"
+        data = {
+            "data_consulta": "2024-23-12",
+            "hora_inicio_consulta": "16:00:00",
+            "profissional_fk": self.profissional.id,  
+            "procedimento_fk": self.procedimento.id,  
+            "paciente_fk": self.paciente.id
+        }
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, 400)
+    
+    def test_erro_create_solicitacao_agendamento_formato_inicio_invalido(self):
+
+        url = "/api/solicitacoes-agendamento/"
+        data = {
+            "data_consulta": "2024-23-12",
+            "hora_inicio_consulta": "16 horas",
+            "profissional_fk": self.profissional.id,  
+            "procedimento_fk": self.procedimento.id,  
+            "paciente_fk": self.paciente.id    
+        }
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, 400)
+
+    def test_erro_create_solicitacao_agendamento_data_invalida(self):
+
+        url = "/api/solicitacoes-agendamento/"
+        data = {
+            "data_consulta": "2000-23-12",
+            "hora_inicio_consulta": "16:00:00",
+            "profissional_fk": self.profissional.id,  
+            "procedimento_fk": self.procedimento.id,  
+            "paciente_fk": self.paciente.id 
+        }
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, 400)
+
+    def test_erro_create_profissional_procedimento(self):
+        url = "/api/profissional-procedimento/"
+        data = {
+            "tempo_duracao": "30 minutos",
+            "profissional_fk": self.profissional.id,  
+            "procedimento_fk": self.procedimento.id,  
+        }
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, 400)
+
+    def test_erro_create_horario_atendimento_com_formato_dia_invalido(self):
+        url = "/api/horarios-atendimento/"
+        data = {
+            "dia_da_semana": "segunda feira",
+            "inicio": "14:00:00",
+            "fim": "18:00:00",
+            "profissional_fk": self.profissional.id,  
+        }
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, 400)
+
+    def test_erro_create_horario_atendimento_com_inicio_e_fim_invalido(self):
+        url = "/api/horarios-atendimento/"
+        data = {
+            "dia_da_semana": "segunda feira",
+            "inicio": "14:00:00",
+            "fim": "12:00:00",
+            "profissional_fk": self.profissional.id,  
+        }
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, 400)
+    
+    def test_erro_create_paciente_sem_nome(self):
+        url = "/api/paciente/"
+        data = {
+            "sobrenome": "Mendoça Inacio",
+            "cpf": "06733563100",
+            "rg": "12997",
+            "orgao_expeditor": "SSP-GO",
+            "sexo": "F",
+            "celular": "62983107172",
+            "email": "ana.julias@hotmail.com",
+            "nascimento": "2006-02-20",
+            "endereco_fk": self.endereco.id,   
+            "convenio_fk": self.convenio.id
+        }
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, 400)
+
+    def test_erro_create_paciente_cpf_invalido(self):
+        url = "/api/paciente/"
+        data = {
+            "nome": "Ana Julia",
+            "sobrenome": "Mendoça Inacio",
+            "cpf": "098765432112",
+            "rg": "12997",
+            "orgao_expeditor": "SSP-GO",
+            "sexo": "F",
+            "celular": "62983107172",
+            "email": "ana.julias@hotmail.com",
+            "nascimento": "2006-02-20",
+            "endereco_fk": self.endereco.id,   
+            "convenio_fk": self.convenio.id
+        }
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, 400)
+
+    def test_erro_create_paciente_sexo_invalido(self):
+        url = "/api/paciente/"
+        data = {
+            "nome": "Ana Julia",
+            "sobrenome": "Mendoça Inacio",
+            "cpf": "06733563100",
+            "rg": "12997",
+            "orgao_expeditor": "SSP-GO",
+            "sexo": "Mulher",
+            "celular": "62983107172",
+            "email": "ana.julias@hotmail.com",
+            "nascimento": "2006-02-20",
+            "endereco_fk": self.endereco.id,   
+            "convenio_fk": self.convenio.id
+        }
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, 400)
+
+    def test_erro_create_paciente_cpf_ja_existente(self):
+        url = "/api/paciente/"
+        data = {
+            "nome": "Ana Julia",
+            "sobrenome": "Mendoça Inacio",
+            "cpf": "92708765191",
+            "rg": "12997",
+            "orgao_expeditor": "SSP-GO",
+            "sexo": "F",
+            "celular": "62983107172",
+            "email": "ana.julias@hotmail.com",
+            "nascimento": "2006-02-20",
+            "endereco_fk": self.endereco.id,   
+            "convenio_fk": self.convenio.id
+        }
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, 400)
+
+    def test_erro_create_paciente_celular_incorreto(self):
+        url = "/api/paciente/"
+        data = {
+            "nome": "Ana Julia",
+            "sobrenome": "Mendoça Inacio",
+            "cpf": "06733563100",
+            "rg": "12997",
+            "orgao_expeditor": "SSP-GO",
+            "sexo": "F",
+            "celular": "6298310717",
+            "email": "ana.julias@hotmail.com",
+            "nascimento": "2006-02-20",
+            "endereco_fk": self.endereco.id,   
+            "convenio_fk": self.convenio.id
+        }
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, 400)
