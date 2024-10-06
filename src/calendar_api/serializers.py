@@ -7,6 +7,15 @@ class EnderecoSerializer(serializers.ModelSerializer):
         model = Endereco
         fields = '__all__'
 
+    def validate(self, data):
+        numero = data.get('numero')
+        quadra_lote = data.get('quadra_lote')
+        
+        if not numero and not quadra_lote:
+            raise serializers.ValidationError("ERROR - Um dos campos numero ou quadra e lote deve existir")
+        
+        return data
+
 
 class ConvenioSerializer(serializers.ModelSerializer):
     class Meta:
