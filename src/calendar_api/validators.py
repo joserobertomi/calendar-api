@@ -11,39 +11,37 @@ STATES = [
 DAYS_OF_WEEK = ['2a', '3a', '4a', '5a', '6a', 'sab', 'dom']
 REGISTERS = ['CRM', 'CRBM', 'CRO', 'COREN', 'CRF', 'CRN'] 
 
-def validate_cpf(cpf: str) -> str:
-    """Efetua a validação do CPF, tanto formatação quando dígito verificadores.
-
+def validate_cpf(cpf: str) -> None:
+    """Efetua a validação do CPF, tanto formatação quanto dígitos verificadores.
+    
     Parâmetros:
         cpf (str): CPF a ser validado
 
-    Retorno:
-        bool:
-            - Falso, quando o CPF não possuir o formato 99999999999;
-            - Falso, quando o CPF não possuir 11 caracteres numéricos;
-            - Falso, quando os dígitos verificadores forem inválidos;
-            - Verdadeiro, caso contrário.
+    Levanta:
+        ValidationError: Se o CPF for inválido.
     """
 
-    if match(r"\d{3}\.\d{3}\.\d{3}-\d{2}", cpf):
-        return ValidationError("CPF Inválido.")
+    # Verifica se o formato está correto (com pontuação)
+    if not match(r"^\d{11}$", cpf):  # Aceita apenas números
+        raise ValidationError("CPF deve conter apenas 11 dígitos numéricos.")
 
     numbers = [int(digit) for digit in cpf if digit.isdigit()]
 
+    # Verifica se tem 11 dígitos ou se todos os números são iguais (ex: 11111111111)
     if len(numbers) != 11 or len(set(numbers)) == 1:
-        return ValidationError("CPF Inválido.")
+        raise ValidationError("CPF Inválido.")
 
+    # Validação do primeiro dígito verificador
     sum_of_products = sum(a * b for a, b in zip(numbers[0:9], range(10, 1, -1)))
     expected_digit = (sum_of_products * 10 % 11) % 10
     if numbers[9] != expected_digit:
-        return ValidationError("CPF Inválido.")
+        raise ValidationError("CPF Inválido.")
 
+    # Validação do segundo dígito verificador
     sum_of_products = sum(a * b for a, b in zip(numbers[0:10], range(11, 1, -1)))
     expected_digit = (sum_of_products * 10 % 11) % 10
     if numbers[10] != expected_digit:
-        return ValidationError("CPF Inválido.")
-
-    return cpf
+        raise ValidationError("CPF Inválido.")
 
 
 def validate_cep(value) -> str:
