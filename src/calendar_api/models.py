@@ -174,7 +174,7 @@ class HorariosAtendimento(models.Model):
 
 class Procedimento(models.Model):
     id = models.BigAutoField(primary_key=True)
-    nome = models.CharField(max_length=32, validators=[validade_char_lower_than_32], unique=True)
+    nome = models.CharField(max_length=128, validators=[validade_char_lower_than_32], unique=True)
     def __str__(self) -> str:
         return self.nome
 
