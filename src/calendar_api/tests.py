@@ -1,6 +1,7 @@
 from django.contrib.auth import get_user_model
 from rest_framework import status
 from rest_framework.test import APITestCase
+from .models import Endereco, Convenio, Profissional, Procedimento, Paciente
 
 # Create your tests here.
 
@@ -13,6 +14,48 @@ class ApiTestCase(APITestCase):
             password='admin'
         )
         self.client.force_authenticate(user=self.user)
+
+        self.profissional = Profissional.objects.create(
+            nome = "Joilson", 
+            sobrenome = "Jose Inacio", 
+            cpf = "43326714149",
+            uf_registro = "GO",
+            n_registro = 1,
+            tipo_registro = "CRM",
+            email = "joilson@gmail.com" 
+        )
+        self.endereco = Endereco.objects.create(
+            cep = "13479683",
+            rua = "Joao Borges",
+            bairro = "Jaira",
+            numero = 90 ,
+            cidade = "Americana",
+            estado = "SP"
+        )
+        self.convenio = Convenio.objects.create(
+            nome = "Liberty",
+            inscricao = "123456"
+        )
+        self.procedimento = Procedimento.objects.create(
+            nome = "Cirurgia de Hemorroida",
+        )
+        self.paciente = Paciente.objects.create(
+            nome = "Adelaide Christina",
+            sobrenome = "Reboucas Inacio", 
+            cpf = 92708765191, 
+            rg = 3791808, 
+            orgao_expeditor = "SSP-GO", 
+            sexo = "F", 
+            celular = 62981392570,
+            email = "adelaide.mundoquali@gmail.com",
+            nascimento = "1986-06-25"
+        )
+        self.profissional_id_fk = self.profissional.id
+        endereco_id_fk = self.endereco.id
+        convenio_id_fk = self.convenio.id
+        procedimento_id_fk = self.procedimento.id
+        paciente_id_fk = self.paciente.id
+    
 
     # Funcoes de Listagem
     def test_list_convenios(self):
@@ -107,20 +150,19 @@ class ApiTestCase(APITestCase):
         data = {
             "data_consulta": "2024-10-23",
             "hora_inicio_consulta": "16:00:00",
-            #"profissional_fk": 1,  ! testo no postman e funciona!
-            #"procedimento_fk": 2,  ! testo no postman e funciona!
-            #"paciente_fk": 1       ! testo no postman e funciona!
+            "profissional_fk": self.profissional.id,  
+            "procedimento_fk": self.procedimento.id,  
+            "paciente_fk": self.paciente.id       
         }
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, 201)
-
 
     def test_create_profissional_procedimento(self):
         url = "/api/profissional-procedimento/"
         data = {
             "tempo_duracao": "00:30:00",
-            #"profissional_fk": 1,  ! testo no postman e funciona!
-            #"procedimento_fk": 1   ! testo no postman e funciona!
+            "profissional_fk": self.profissional.id,
+            "procedimento_fk": self.procedimento.id
         }
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, 201)
@@ -130,8 +172,8 @@ class ApiTestCase(APITestCase):
         data = {
             "dia_da_semana": "2a",
             "inicio": "14:00:00",
-            "fim": "18:00:00"
-            # "profissional_fk": 1 ,  ! testo no postman e funciona!
+            "fim": "18:00:00",
+            "profissional_fk": self.profissional.id
         }
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, 201)
@@ -147,9 +189,11 @@ class ApiTestCase(APITestCase):
             "sexo": "F",
             "celular": "62983107172",
             "email": "ana.julias@hotmail.com",
-            "nascimento": "2006-02-20"
-            # "endereco_fk": 1,   ! testo no postman e funciona!
-            # "convenio_fk": 1 ,  ! testo no postman e funciona!
+            "nascimento": "2006-02-20",
+            "endereco_fk": self.endereco.id,
+            "convenio_fk": self.convenio.id
         }
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, 201)
+
+    
