@@ -96,6 +96,15 @@ def validade_char_lower_than_64(value: str) -> str:
             params={'value': value},
         )
     return str(value)
+
+
+def validade_char_lower_than_128(value: str) -> str:
+    if len(value) > 128:
+        raise ValidationError(
+            _('%(value)s tem mais de 128 caracteres'),
+            params={'value': value},
+        )
+    return str(value)
     
 
 def validate_integer(value) -> int:
