@@ -81,7 +81,7 @@ class HorariosAtendimentoViewSet(viewsets.ModelViewSet):
 
 class ProntuarioViewSet(viewsets.ModelViewSet):
     queryset = Prontuario.objects.all()
-    serializer_class = ProcedimentoSerializer
+    serializer_class = ProntuarioSerializer
 
     def get_permissions(self):
         permission_classes = [IsAdminOnly]
