@@ -10,7 +10,8 @@ class ApiTestCase(APITestCase):
     def setUp(self):
         self.user = get_user_model().objects.create_user(
             username='admin',
-            password='admin'
+            password='admin', 
+            is_staff=True 
         )
         self.client.force_authenticate(user=self.user)
 
@@ -61,8 +62,7 @@ class ApiTestCase(APITestCase):
         self.profissional_procedimento = ProfissionalProcedimento.objects.create(
             tempo_duracao = "00:30:00"
         )
-    
-
+        
     # Funcoes de Listagem
     def test_list_convenios(self):
         url = "/api/convenio/"
@@ -107,7 +107,7 @@ class ApiTestCase(APITestCase):
     def test_list_prontuario(self):
         url = "/api/prontuario/"
         response = self.client.get(url)
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 200)
 
     # Funcoes de criacao
     def test_create_convenio(self):
@@ -215,7 +215,7 @@ class ApiTestCase(APITestCase):
             "paciente_fk": self.paciente.id
         }
         response = self.client.post(url, data, format='json')
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 201)
 
     # Fluxos de erros
     def test_erro_create_convenio_sem_convenio(self):
@@ -574,7 +574,7 @@ class ApiTestCase(APITestCase):
             "texto": "FALA COMIGO BBZINHOSSS",
         }
         response = self.client.post(url, data, format='json')
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 400)
 
     def test_erro_create_prontuario_sem_texto(self):
         url = "/api/prontuario/"
@@ -583,7 +583,7 @@ class ApiTestCase(APITestCase):
             "paciente_fk": self.paciente.id
         }
         response = self.client.post(url, data, format='json')
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 400)
 
     # Fluxo de updates 
     def test_update_convenio(self):

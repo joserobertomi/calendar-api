@@ -1,4 +1,3 @@
-from django.contrib.auth import get_user_model
 from rest_framework.test import APITestCase
 from .models import Endereco, Convenio, Paciente, SolicitacaoAgendamento, Profissional, ProfissionalProcedimento, Procedimento, HorariosAtendimento, Prontuario
 
@@ -8,12 +7,6 @@ class ApiTestCase(APITestCase):
     
     # SetUp do Cliente
     def setUp(self):
-        self.user = get_user_model().objects.create_user(
-            username='admin',
-            password='admin'
-        )
-        self.client.force_authenticate(user=self.user)
-
         self.profissional = Profissional.objects.create(
             nome = "Joilson", 
             sobrenome = "Jose Inacio", 
@@ -61,53 +54,53 @@ class ApiTestCase(APITestCase):
         self.profissional_procedimento = ProfissionalProcedimento.objects.create(
             tempo_duracao = "00:30:00"
         )
-    
+
 
     # Funcoes de Listagem
     def test_list_convenios(self):
         url = "/api/convenio/"
         response = self.client.get(url)
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 401)
 
     def test_list_enderecos(self):
         url = "/api/endereco/"
         response = self.client.get(url)
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 401)
 
     def test_list_horarios_atendimento(self):
         url = "/api/horarios-atendimento/"
         response = self.client.get(url)
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 401)
 
     def test_list_profissionais(self):
         url = "/api/profissional/"
         response = self.client.get(url)
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 401)
 
     def test_list_procedimentos(self):
         url = "/api/procedimento/"
         response = self.client.get(url)
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 401)
 
     def test_list_pacientes(self):
         url = "/api/paciente/"
         response = self.client.get(url)
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 401)
 
     def test_list_profissional_procedimento(self):
         url = "/api/profissional-procedimento/"
         response = self.client.get(url)
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 401)
 
     def test_list_solicitacao_agendamento(self):
         url = "/api/solicitacoes-agendamento/"
         response = self.client.get(url)
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 401)
 
     def test_list_prontuario(self):
         url = "/api/prontuario/"
         response = self.client.get(url)
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 401)
 
     # Funcoes de criacao
     def test_create_convenio(self):
@@ -117,7 +110,7 @@ class ApiTestCase(APITestCase):
             "inscricao": "0123456789"
         }
         response = self.client.post(url, data, format='json')
-        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.status_code, 401)
  
     def test_create_endereco(self):
         url = "/api/endereco/"
@@ -131,7 +124,7 @@ class ApiTestCase(APITestCase):
             "complemento": "Ap 1202"
         }
         response = self.client.post(url, data, format='json')
-        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.status_code, 401)
 
     def test_create_profissional(self):
         url = "/api/profissional/"
@@ -145,7 +138,7 @@ class ApiTestCase(APITestCase):
             "email": "joserobertomi@outlook.com"
         }
         response = self.client.post(url, data, format='json')
-        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.status_code, 401)
 
     def test_create_procedimento(self):
         url = "/api/procedimento/"
@@ -153,7 +146,7 @@ class ApiTestCase(APITestCase):
             "nome": "Preenchiemento Labial"
         }
         response = self.client.post(url, data, format='json')
-        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.status_code, 401)
 
     def test_create_solicitacao_agendamento(self):
 
@@ -166,7 +159,7 @@ class ApiTestCase(APITestCase):
             "paciente_fk": self.paciente.id       
         }
         response = self.client.post(url, data, format='json')
-        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.status_code, 401)
 
     def test_create_profissional_procedimento(self):
         url = "/api/profissional-procedimento/"
@@ -176,7 +169,7 @@ class ApiTestCase(APITestCase):
             "procedimento_fk": self.procedimento.id
         }
         response = self.client.post(url, data, format='json')
-        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.status_code, 401)
 
     def test_create_horario_atendimento(self):
         url = "/api/horarios-atendimento/"
@@ -187,7 +180,7 @@ class ApiTestCase(APITestCase):
             "profissional_fk": self.profissional.id
         }
         response = self.client.post(url, data, format='json')
-        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.status_code, 401)
 
     def test_create_paciente(self):
         url = "/api/paciente/"
@@ -205,7 +198,7 @@ class ApiTestCase(APITestCase):
             "convenio_fk": self.convenio.id
         }
         response = self.client.post(url, data, format='json')
-        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.status_code, 401)
 
     def test_create_prontuario(self):
         url = "/api/prontuario/"
@@ -215,7 +208,7 @@ class ApiTestCase(APITestCase):
             "paciente_fk": self.paciente.id
         }
         response = self.client.post(url, data, format='json')
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 401)
 
     # Fluxos de erros
     def test_erro_create_convenio_sem_convenio(self):
@@ -224,7 +217,7 @@ class ApiTestCase(APITestCase):
             "inscricao": "0123456"
         }
         response = self.client.post(url, data, format='json')
-        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.status_code, 401)
 
     def test_erro_create_convenio_sem_inscricao(self):
         url = "/api/convenio/"
@@ -232,7 +225,7 @@ class ApiTestCase(APITestCase):
             "nome": "Real Grandeza"
         }
         response = self.client.post(url, data, format='json')
-        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.status_code, 401)
 
     def test_erro_create_endereco_cep_invalido(self):
         url = "/api/endereco/"
@@ -246,7 +239,7 @@ class ApiTestCase(APITestCase):
             "complemento": "Ap 1202"
         }
         response = self.client.post(url, data, format='json')
-        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.status_code, 401)
 
     def test_erro_create_endereco_sem_numero_e_sem_quadra_lote(self):
         url = "/api/endereco/"
@@ -259,7 +252,7 @@ class ApiTestCase(APITestCase):
             "complemento": "Ap 1202"
         }
         response = self.client.post(url, data, format='json')
-        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.status_code, 401)
 
     def test_erro_create_endereco_sem_cidade(self):
         url = "/api/endereco/"
@@ -272,7 +265,7 @@ class ApiTestCase(APITestCase):
             "complemento": "Ap 1202"
         }
         response = self.client.post(url, data, format='json')
-        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.status_code, 401)
 
     def test_erro_create_endereco_estado_invalido(self):
         url = "/api/endereco/"
@@ -287,7 +280,7 @@ class ApiTestCase(APITestCase):
             "complemento": "Ap 1202"
         }
         response = self.client.post(url, data, format='json')
-        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.status_code, 401)
     
     def test_erro_create_profissional_sem_nome(self):
         url = "/api/profissional/"
@@ -300,7 +293,7 @@ class ApiTestCase(APITestCase):
             "email": "joserobertomi@outlook.com"
         }
         response = self.client.post(url, data, format='json')
-        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.status_code, 401)
 
     def test_erro_create_profissional_com_cpf_invalido(self):
         url = "/api/profissional/"
@@ -314,7 +307,7 @@ class ApiTestCase(APITestCase):
             "email": "joserobertomi@outlook.com"
         }
         response = self.client.post(url, data, format='json')
-        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.status_code, 401)
 
     def test_erro_create_profissional_sem_n_registro(self):
         url = "/api/profissional/"
@@ -327,7 +320,7 @@ class ApiTestCase(APITestCase):
             "email": "joserobertomi@outlook.com"
         }
         response = self.client.post(url, data, format='json')
-        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.status_code, 401)
 
     def test_erro_create_profissional_com_n_registro_invalido(self):
         url = "/api/profissional/"
@@ -341,7 +334,7 @@ class ApiTestCase(APITestCase):
             "email": "joserobertomi@outlook.com"
         }
         response = self.client.post(url, data, format='json')
-        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.status_code, 401)
 
     def test_erro_create_profissional_com_tipo_registro_invalido(self):
         url = "/api/profissional/"
@@ -355,7 +348,7 @@ class ApiTestCase(APITestCase):
             "email": "joserobertomi@outlook.com"
         }
         response = self.client.post(url, data, format='json')
-        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.status_code, 401)
 
     def test_erro_create_profissional_sem_email(self):
         url = "/api/profissional/"
@@ -368,7 +361,7 @@ class ApiTestCase(APITestCase):
             "tipo_registro": "CRM"
         }
         response = self.client.post(url, data, format='json')
-        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.status_code, 401)
 
     def  test_erro_create_profissional_com_email_existente(self):
         url = "/api/profissional/"
@@ -382,13 +375,13 @@ class ApiTestCase(APITestCase):
             "email": "joilson@gmail.com"
         }
         response = self.client.post(url, data, format='json')
-        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.status_code, 401)
 
     def test_erro_create_procedimento_sem_dado(self):
         url = "/api/procedimento/"
         data = {}
         response = self.client.post(url, data, format='json')
-        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.status_code, 401)
     
     def test_erro_create_solicitacao_agendamento_formato_data_invalido(self):
 
@@ -401,7 +394,7 @@ class ApiTestCase(APITestCase):
             "paciente_fk": self.paciente.id
         }
         response = self.client.post(url, data, format='json')
-        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.status_code, 401)
     
     def test_erro_create_solicitacao_agendamento_formato_inicio_invalido(self):
 
@@ -414,7 +407,7 @@ class ApiTestCase(APITestCase):
             "paciente_fk": self.paciente.id    
         }
         response = self.client.post(url, data, format='json')
-        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.status_code, 401)
 
     def test_erro_create_solicitacao_agendamento_data_invalida(self):
 
@@ -427,7 +420,7 @@ class ApiTestCase(APITestCase):
             "paciente_fk": self.paciente.id 
         }
         response = self.client.post(url, data, format='json')
-        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.status_code, 401)
 
     def test_erro_create_profissional_procedimento(self):
         url = "/api/profissional-procedimento/"
@@ -437,7 +430,7 @@ class ApiTestCase(APITestCase):
             "procedimento_fk": self.procedimento.id,  
         }
         response = self.client.post(url, data, format='json')
-        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.status_code, 401)
 
     def test_erro_create_horario_atendimento_com_formato_dia_invalido(self):
         url = "/api/horarios-atendimento/"
@@ -448,7 +441,7 @@ class ApiTestCase(APITestCase):
             "profissional_fk": self.profissional.id,  
         }
         response = self.client.post(url, data, format='json')
-        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.status_code, 401)
 
     def test_erro_create_horario_atendimento_com_inicio_e_fim_invalido(self):
         url = "/api/horarios-atendimento/"
@@ -459,7 +452,7 @@ class ApiTestCase(APITestCase):
             "profissional_fk": self.profissional.id,  
         }
         response = self.client.post(url, data, format='json')
-        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.status_code, 401)
     
     def test_erro_create_paciente_sem_nome(self):
         url = "/api/paciente/"
@@ -476,7 +469,7 @@ class ApiTestCase(APITestCase):
             "convenio_fk": self.convenio.id
         }
         response = self.client.post(url, data, format='json')
-        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.status_code, 401)
 
     def test_erro_create_paciente_cpf_invalido(self):
         url = "/api/paciente/"
@@ -494,7 +487,7 @@ class ApiTestCase(APITestCase):
             "convenio_fk": self.convenio.id
         }
         response = self.client.post(url, data, format='json')
-        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.status_code, 401)
 
     def test_erro_create_paciente_sexo_invalido(self):
         url = "/api/paciente/"
@@ -512,7 +505,7 @@ class ApiTestCase(APITestCase):
             "convenio_fk": self.convenio.id
         }
         response = self.client.post(url, data, format='json')
-        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.status_code, 401)
 
     def test_erro_create_paciente_cpf_ja_existente(self):
         url = "/api/paciente/"
@@ -530,7 +523,7 @@ class ApiTestCase(APITestCase):
             "convenio_fk": self.convenio.id
         }
         response = self.client.post(url, data, format='json')
-        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.status_code, 401)
 
     def test_erro_create_paciente_celular_incorreto(self):
         url = "/api/paciente/"
@@ -548,7 +541,7 @@ class ApiTestCase(APITestCase):
             "convenio_fk": self.convenio.id
         }
         response = self.client.post(url, data, format='json')
-        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.status_code, 401)
 
     def test_erro_create_paciente_data_nascimento_formato_incorreto(self):
         url = "/api/paciente/"
@@ -566,7 +559,7 @@ class ApiTestCase(APITestCase):
             "convenio_fk": self.convenio.id
         }
         response = self.client.post(url, data, format='json')
-        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.status_code, 401)
 
     def test_erro_create_prontuario_sem_fks(self):
         url = "/api/prontuario/"
@@ -574,7 +567,7 @@ class ApiTestCase(APITestCase):
             "texto": "FALA COMIGO BBZINHOSSS",
         }
         response = self.client.post(url, data, format='json')
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 401)
 
     def test_erro_create_prontuario_sem_texto(self):
         url = "/api/prontuario/"
@@ -583,7 +576,7 @@ class ApiTestCase(APITestCase):
             "paciente_fk": self.paciente.id
         }
         response = self.client.post(url, data, format='json')
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 401)
 
     # Fluxo de updates 
     def test_update_convenio(self):
@@ -592,7 +585,7 @@ class ApiTestCase(APITestCase):
             "nome": "Real Liberty SA",
         }
         response = self.client.patch(url, data, format='json')
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 401)
  
     def test_update_endereco(self):
         url = f"/api/endereco/{self.endereco.id}/"
@@ -600,7 +593,7 @@ class ApiTestCase(APITestCase):
             "numero": 90
         }
         response = self.client.patch(url, data, format='json')
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 401)
 
     def test_update_profissional(self):
         url = f"/api/profissional/{self.profissional.id}/"
@@ -609,7 +602,7 @@ class ApiTestCase(APITestCase):
             "sobrenome": "Mendonça Inacio",
         }
         response = self.client.patch(url, data, format='json')
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 401)
 
     def test_update_procedimento(self):
         url = f"/api/procedimento/{self.procedimento.id}/"
@@ -617,7 +610,7 @@ class ApiTestCase(APITestCase):
             "nome": "Cirurgia de Hemorroida com Enzimas Foliformes"
         }
         response = self.client.patch(url, data, format='json')
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 401)
 
     def test_update_solicitacao_agendamento(self):
         url = f"/api/solicitacoes-agendamento/{self.procedimento.id}/"
@@ -626,7 +619,7 @@ class ApiTestCase(APITestCase):
             "hora_inicio_consulta": "15:30:00",
         }
         response = self.client.patch(url, data, format='json')
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 401)
 
     def test_update_profissional_procedimento(self):
         url = f"/api/profissional-procedimento/{self.profissional_procedimento.id}/"
@@ -634,7 +627,7 @@ class ApiTestCase(APITestCase):
             "tempo_duracao": "00:45:00",
         }
         response = self.client.patch(url, data, format='json')
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 401)
 
     def test_update_horario_atendimento(self):
         url = f"/api/horarios-atendimento/{self.horarios_atendimento.id}/"
@@ -644,7 +637,7 @@ class ApiTestCase(APITestCase):
             "fim": "20:00:00",
         }
         response = self.client.patch(url, data, format='json')
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 401)
 
     def test_update_paciente(self):
         url = f"/api/paciente/{self.paciente.id}/"
@@ -652,5 +645,5 @@ class ApiTestCase(APITestCase):
             "email": "jujubinha@gmail.com"
         }
         response = self.client.patch(url, data, format='json')
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 401)
     
