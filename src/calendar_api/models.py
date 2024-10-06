@@ -190,13 +190,6 @@ class ProfissionalProcedimento(models.Model):
 
 
 class SolicitacaoAgendamento(models.Model):
-    STATUS_OPTIONS = (
-        (1, "Aguardando ambas confirmações"),
-        (2, "Aguardando confirmação do médico"), 
-        (3, "Aguardando confirmação do paciente"),
-        (4, "Agendamento confirmado"),
-        (5, "Agendamento cancelado"),
-    )
     
     id = models.BigAutoField(primary_key=True)
     data_consulta = models.DateField()
