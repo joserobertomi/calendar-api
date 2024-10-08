@@ -384,6 +384,20 @@ class ApiTestCase(APITestCase):
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, 400)
 
+    def test_erro_create_profissinoal_email_dns_invalido(self):
+        url = "/api/paciente/"
+        data = {
+            "nome": "Jose Roberto", 
+            "sobrenome": "Mendonça Inacio",
+            "cpf": "06733563101",
+            "uf_registro": "GO",
+            "n_registro": "A",
+            "tipo_registro": "CRM",
+            "email": "joilson@0123456789.com"
+        }
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, 400)
+
     def test_erro_create_procedimento_sem_dado(self):
         url = "/api/procedimento/"
         data = {}
@@ -391,7 +405,6 @@ class ApiTestCase(APITestCase):
         self.assertEqual(response.status_code, 400)
     
     def test_erro_create_solicitacao_agendamento_formato_data_invalido(self):
-
         url = "/api/solicitacoes-agendamento/"
         data = {
             "data_consulta": "2024-23-12",
@@ -404,7 +417,6 @@ class ApiTestCase(APITestCase):
         self.assertEqual(response.status_code, 400)
     
     def test_erro_create_solicitacao_agendamento_formato_inicio_invalido(self):
-
         url = "/api/solicitacoes-agendamento/"
         data = {
             "data_consulta": "2024-23-12",
@@ -417,7 +429,6 @@ class ApiTestCase(APITestCase):
         self.assertEqual(response.status_code, 400)
 
     def test_erro_create_solicitacao_agendamento_data_invalida(self):
-
         url = "/api/solicitacoes-agendamento/"
         data = {
             "data_consulta": "2000-23-12",
@@ -507,6 +518,24 @@ class ApiTestCase(APITestCase):
             "sexo": "Mulher",
             "celular": "62983107172",
             "email": "ana.julias@hotmail.com",
+            "nascimento": "2006-02-20",
+            "endereco_fk": self.endereco.id,   
+            "convenio_fk": self.convenio.id
+        }
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, 400)
+
+    def test_erro_create_paciente_email_dns_invalido(self):
+        url = "/api/paciente/"
+        data = {
+            "nome": "Ana Julia",
+            "sobrenome": "Mendoça Inacio",
+            "cpf": "06733563100",
+            "rg": "12997",
+            "orgao_expeditor": "SSP-GO",
+            "sexo": "F",
+            "celular": "62983107172",
+            "email": "ana.julias@0123456789.com",
             "nascimento": "2006-02-20",
             "endereco_fk": self.endereco.id,   
             "convenio_fk": self.convenio.id
