@@ -19,3 +19,4 @@ django-filter==23.1
 django-auditlog==2.2.2
 django-bootstrap-v5
 djoser
+dnspython==2.3

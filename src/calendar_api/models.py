@@ -2,41 +2,10 @@ from django.db import models
 from .validators import *
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
-from datetime import datetime
-
+from .utils.choices import BRAZIL_STATES, REGISTER_TYPES, WEEK_DAYS
 # Create your models here.
 
 class Endereco(models.Model):
-    BRAZIL_STATES = (
-        ('AC', 'Acre'),
-        ('AL', 'Alagoas'),
-        ('AP', 'Amapá'),
-        ('AM', 'Amazonas'),
-        ('BA', 'Bahia'),
-        ('CE', 'Ceará'),
-        ('DF', 'Distrito Federal'),
-        ('ES', 'Espírito Santo'),
-        ('GO', 'Goiás'),
-        ('MA', 'Maranhão'),
-        ('MT', 'Mato Grosso'),
-        ('MS', 'Mato Grosso do Sul'),
-        ('MG', 'Minas Gerais'),
-        ('PA', 'Pará'),
-        ('PB', 'Paraíba'),
-        ('PR', 'Paraná'),
-        ('PE', 'Pernambuco'),
-        ('PI', 'Piauí'),
-        ('RJ', 'Rio de Janeiro'),
-        ('RN', 'Rio Grande do Norte'),
-        ('RS', 'Rio Grande do Sul'),
-        ('RO', 'Rondônia'),
-        ('RR', 'Roraima'),
-        ('SC', 'Santa Catarina'),
-        ('SP', 'São Paulo'),
-        ('SE', 'Sergipe'),
-        ('TO', 'Tocantins'),
-    )
-    
     id = models.BigAutoField(primary_key=True)
     cep = models.CharField(max_length=8, validators=[validate_cep])
     rua = models.CharField(max_length=32, validators=[validade_char_lower_than_32])
@@ -80,7 +49,7 @@ class Paciente(models.Model):
     orgao_expeditor = models.CharField(max_length=16, validators=[validade_char_lower_than_16])
     sexo = models.CharField(max_length=1, choices=(('F', 'Feminino'), ('M', 'Masculino')))
     celular = models.CharField(max_length=11, validators=[validate_phone])
-    email = models.EmailField()
+    email = models.EmailField(validators=[checkDns])
     nascimento = models.DateField(validators=[validate_date_not_130_years_later, validate_date_not_newer_than_today])
     endereco_fk = models.ForeignKey(Endereco, null=True, blank=True, on_delete=models.SET_NULL)
     convenio_fk = models.ForeignKey(Convenio, null=True, blank=True, on_delete=models.SET_NULL)
@@ -90,44 +59,6 @@ class Paciente(models.Model):
 
 
 class Profissional(models.Model):
-    BRAZIL_STATES = (
-        ('AC', 'Acre'),
-        ('AL', 'Alagoas'),
-        ('AP', 'Amapá'),
-        ('AM', 'Amazonas'),
-        ('BA', 'Bahia'),
-        ('CE', 'Ceará'),
-        ('DF', 'Distrito Federal'),
-        ('ES', 'Espírito Santo'),
-        ('GO', 'Goiás'),
-        ('MA', 'Maranhão'),
-        ('MT', 'Mato Grosso'),
-        ('MS', 'Mato Grosso do Sul'),
-        ('MG', 'Minas Gerais'),
-        ('PA', 'Pará'),
-        ('PB', 'Paraíba'),
-        ('PR', 'Paraná'),
-        ('PE', 'Pernambuco'),
-        ('PI', 'Piauí'),
-        ('RJ', 'Rio de Janeiro'),
-        ('RN', 'Rio Grande do Norte'),
-        ('RS', 'Rio Grande do Sul'),
-        ('RO', 'Rondônia'),
-        ('RR', 'Roraima'),
-        ('SC', 'Santa Catarina'),
-        ('SP', 'São Paulo'),
-        ('SE', 'Sergipe'),
-        ('TO', 'Tocantins'),
-    )
-    REGISTER_TYPES = (
-        ('CRM', 'Conselho Regional de Medicina'),
-        ('CRBM', 'Conselho Regional de Biomedicina'),
-        ('CRO', 'Conselho Regional de Odontologia'),
-        ('COREN', 'Conselho Regional de Enfermagem'),
-        ('CRF', 'Conselho Regional de Farmácia'),
-        ('CRN', 'Conselho Regional de Nutrição')
-    )
-    
     id = models.BigAutoField(primary_key=True) 
     nome = models.CharField(max_length=32, validators=[validade_char_lower_than_32])
     sobrenome = models.CharField(max_length=32, validators=[validade_char_lower_than_32])
@@ -135,7 +66,7 @@ class Profissional(models.Model):
     uf_registro = models.CharField(max_length=2, choices=BRAZIL_STATES, validators=[validate_state])
     n_registro = models.PositiveIntegerField(validators=[validate_integer, validate_grater_than_1])
     tipo_registro = models.CharField(max_length=8, choices=REGISTER_TYPES, validators=[validate_registers])
-    email = models.EmailField(unique=True)
+    email = models.EmailField(unique=True, validators=[checkDns])
 
     def __str__(self) -> str:
         return f"{self.nome} {self.sobrenome}"
@@ -143,16 +74,6 @@ class Profissional(models.Model):
 
 class HorariosAtendimento(models.Model):
     id = models.BigAutoField(primary_key=True)
-    WEEK_DAYS = (
-        ('2a', 'Segunda-feira'),
-        ('3a', 'Terça-feira'),
-        ('4a', 'Quarta-feira'),
-        ('5a', 'Quinta-feira'),
-        ('6a', 'Sexta-feira'),
-        ('Sab', 'Sábado'),
-        ('Dom', 'Domingo'),
-    )
-
     dia_da_semana = models.CharField(choices=WEEK_DAYS, max_length=3, validators=[validate_days_of_week])
     inicio = models.TimeField()
     fim = models.TimeField()

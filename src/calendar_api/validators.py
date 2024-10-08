@@ -2,6 +2,7 @@ from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 from re import match 
 from datetime import date, timedelta
+import dns.resolver
 
 STATES = [
     'AC', 'AL', 'AM', 'AP', 'BA', 'CE', 'DF', 'ES', 'GO', 
@@ -10,6 +11,18 @@ STATES = [
 ]
 DAYS_OF_WEEK = ['2a', '3a', '4a', '5a', '6a', 'sab', 'dom']
 REGISTERS = ['CRM', 'CRBM', 'CRO', 'COREN', 'CRF', 'CRN'] 
+
+def checkDns(email):
+    domain = email.split('@')[1]
+    try:
+        dns.resolver.resolve(domain, 'MX')
+    except dns.resolver.NXDOMAIN:
+        raise ValidationError(f'O domínio {domain} não possui registros MX válidos.')
+    except dns.resolver.LifetimeTimeout:
+        raise ValidationError("Não foi possível contactar ao DNS")
+    except Exception as e:  # Captura qualquer outra exceção
+        raise ValidationError(f"Ocorreu um erro ao validar o domínio {domain}")
+
 
 def validate_cpf(cpf: str) -> None:
     """Efetua a validação do CPF, tanto formatação quanto dígitos verificadores.
