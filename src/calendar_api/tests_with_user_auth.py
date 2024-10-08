@@ -118,6 +118,11 @@ class ApiTestCase(APITestCase):
         }
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, 201)
+        query= Convenio.objects.filter(
+            nome = "Real Grandeza",
+            inscricao = "0123456789"
+        )
+        self.assertNotEqual(query.count(),0)
  
     def test_create_endereco(self):
         url = "/api/endereco/"
@@ -132,6 +137,16 @@ class ApiTestCase(APITestCase):
         }
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, 201)
+        query= Endereco.objects.filter(
+            cep = "74115040",
+            rua = "Rua 1",
+            bairro = "Setor Oeste",
+            numero = 800,
+            cidade = "Goiania",
+            estado = "GO",
+            complemento = "Ap 1202"
+        )
+        self.assertNotEqual(query.count(),0)
 
     def test_create_profissional(self):
         url = "/api/profissional/"
@@ -146,6 +161,16 @@ class ApiTestCase(APITestCase):
         }
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, 201)
+        query= Profissional.objects.filter(
+            nome = "Jose Roberto",
+            sobrenome = "Mendonça Inacio",
+            cpf = "06733563100",
+            uf_registro = "GO",
+            n_registro = 1,
+            tipo_registro = "CRM",
+            email = "joserobertomi@outlook.com"
+        )
+        self.assertNotEqual(query.count(),0)
 
     def test_create_procedimento(self):
         url = "/api/procedimento/"
@@ -154,9 +179,12 @@ class ApiTestCase(APITestCase):
         }
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, 201)
+        query= Procedimento.objects.filter(
+            nome = "Preenchiemento Labial"
+        )
+        self.assertNotEqual(query.count(),0)
 
     def test_create_solicitacao_agendamento(self):
-
         url = "/api/solicitacoes-agendamento/"
         data = {
             "data_consulta": "2024-10-23",
@@ -167,6 +195,14 @@ class ApiTestCase(APITestCase):
         }
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, 201)
+        query= SolicitacaoAgendamento.objects.filter(
+            data_consulta = "2024-10-23",
+            hora_inicio_consulta = "16:00:00",
+            profissional_fk = self.profissional.id,
+            procedimento_fk = self.procedimento.id,
+            paciente_fk = self.paciente.id 
+        )
+        self.assertNotEqual(query.count(),0)
 
     def test_create_profissional_procedimento(self):
         url = "/api/profissional-procedimento/"
@@ -177,6 +213,12 @@ class ApiTestCase(APITestCase):
         }
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, 201)
+        query= ProfissionalProcedimento.objects.filter(
+            tempo_duracao = "00:30:00",
+            profissional_fk = self.profissional.id,
+            procedimento_fk = self.procedimento.id
+        )
+        self.assertNotEqual(query.count(),0)
 
     def test_create_horario_atendimento(self):
         url = "/api/horarios-atendimento/"
@@ -188,6 +230,13 @@ class ApiTestCase(APITestCase):
         }
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, 201)
+        query= HorariosAtendimento.objects.filter(
+            dia_da_semana = "2a",
+            inicio = "14:00:00",
+            fim = "18:00:00",
+            profissional_fk = self.profissional.id
+        )
+        self.assertNotEqual(query.count(),0)
 
     def test_create_paciente(self):
         url = "/api/paciente/"
@@ -206,16 +255,36 @@ class ApiTestCase(APITestCase):
         }
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, 201)
+        query= Paciente.objects.filter(
+            nome = "Ana Julia",
+            sobrenome = "Mendoça Inacio",
+            cpf = "06733563100",
+            rg = "12997",
+            orgao_expeditor = "SSP-GO",
+            sexo = "F",
+            celular = "62983107172",
+            email = "ana.julias@hotmail.com",
+            nascimento = "2006-02-20",
+            endereco_fk = self.endereco.id,
+            convenio_fk = self.convenio.id
+        )
+        self.assertNotEqual(query.count(),0)
 
     def test_create_prontuario(self):
         url = "/api/prontuario/"
         data = {
-            "texto": "FALA COMIGO BBZINHOSSS",
+            "texto": "Chegou gripado e com hemorroidas agudas",
             "profissional_fk": self.profissional.id,
             "paciente_fk": self.paciente.id
         }
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, 403)
+        query= Prontuario.objects.filter(
+            texto = "Chegou gripado e com hemorroidas agudas",
+            profissional_fk = self.profissional.id,
+            paciente_fk = self.paciente.id
+        )
+        self.assertEqual(query.count(),0)
 
     # Fluxos de erros
     def test_erro_create_convenio_sem_convenio(self):
