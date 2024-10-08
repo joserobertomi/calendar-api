@@ -691,6 +691,10 @@ class ApiTestCase(APITestCase):
         }
         response = self.client.patch(url, data, format='json')
         self.assertEqual(response.status_code, 200)
+        query= Convenio.objects.filter(
+            nome = "Real Liberty SA"
+        )
+        self.assertNotEqual(query.count(),0)
  
     def test_update_endereco(self):
         url = f"/api/endereco/{self.endereco.id}/"
@@ -699,6 +703,10 @@ class ApiTestCase(APITestCase):
         }
         response = self.client.patch(url, data, format='json')
         self.assertEqual(response.status_code, 200)
+        query= Endereco.objects.filter(
+            numero = 90
+        )
+        self.assertNotEqual(query.count(),0)
 
     def test_update_profissional(self):
         url = f"/api/profissional/{self.profissional.id}/"
@@ -708,6 +716,11 @@ class ApiTestCase(APITestCase):
         }
         response = self.client.patch(url, data, format='json')
         self.assertEqual(response.status_code, 200)
+        query= Profissional.objects.filter(
+            nome = "Jose Roberto",
+            sobrenome = "Mendonça Inacio",
+        )
+        self.assertNotEqual(query.count(),0)
 
     def test_update_procedimento(self):
         url = f"/api/procedimento/{self.procedimento.id}/"
@@ -716,6 +729,10 @@ class ApiTestCase(APITestCase):
         }
         response = self.client.patch(url, data, format='json')
         self.assertEqual(response.status_code, 200)
+        query= Procedimento.objects.filter(
+            nome = "Cirurgia de Hemorroida com Enzimas Foliformes"
+        )
+        self.assertNotEqual(query.count(),0)
 
     def test_update_solicitacao_agendamento(self):
         url = f"/api/solicitacoes-agendamento/{self.procedimento.id}/"
@@ -725,6 +742,11 @@ class ApiTestCase(APITestCase):
         }
         response = self.client.patch(url, data, format='json')
         self.assertEqual(response.status_code, 200)
+        query= SolicitacaoAgendamento.objects.filter(
+            data_consulta = "2024-11-23",
+            hora_inicio_consulta = "15:30:00"
+        )
+        self.assertNotEqual(query.count(),0)
 
     def test_update_profissional_procedimento(self):
         url = f"/api/profissional-procedimento/{self.profissional_procedimento.id}/"
@@ -733,6 +755,10 @@ class ApiTestCase(APITestCase):
         }
         response = self.client.patch(url, data, format='json')
         self.assertEqual(response.status_code, 200)
+        query= ProfissionalProcedimento.objects.filter(
+            tempo_duracao = "00:45:00"
+        )
+        self.assertNotEqual(query.count(),0)
 
     def test_update_horario_atendimento(self):
         url = f"/api/horarios-atendimento/{self.horarios_atendimento.id}/"
@@ -743,6 +769,12 @@ class ApiTestCase(APITestCase):
         }
         response = self.client.patch(url, data, format='json')
         self.assertEqual(response.status_code, 200)
+        query= HorariosAtendimento.objects.filter(
+            dia_da_semana = "2a",
+            inicio = "14:00:00",
+            fim = "20:00:00",
+        )
+        self.assertNotEqual(query.count(),0)
 
     def test_update_paciente(self):
         url = f"/api/paciente/{self.paciente.id}/"
@@ -751,4 +783,8 @@ class ApiTestCase(APITestCase):
         }
         response = self.client.patch(url, data, format='json')
         self.assertEqual(response.status_code, 200)
+        query= Paciente.objects.filter(
+            email = "jujubinha@gmail.com"
+        )
+        self.assertNotEqual(query.count(),0)
     
