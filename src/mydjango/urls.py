@@ -20,12 +20,9 @@ from django.conf.urls.static import static
 from django.conf import settings
 from django.contrib.auth import views as auth_views
 from calendar_api.urls import router as router_app
-from myapp.views import ShowHelloWorld
-
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
-    url(r'^$', ShowHelloWorld.as_view(), name='site'),
     path('api/', include('calendar_api.urls')),
     path('api/', include(router_app.urls)),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),

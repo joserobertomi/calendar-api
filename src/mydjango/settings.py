@@ -38,7 +38,6 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'calendar_api.apps.CalendarApiConfig',
-    'myapp.apps.MyappConfig',
     'celery',
     'bootstrap5',
     'rest_framework', 
