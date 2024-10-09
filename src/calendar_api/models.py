@@ -30,16 +30,6 @@ class Endereco(models.Model):
             return (f"{self.numero}, {self.bairro}, {self.cidade}")
         return (f"{self.quadra_lote}, {self.bairro}, {self.cidade}")
 
-    class Meta:
-        permissions = [
-            ("endereco_list", "Pode Listar todos Enderecos na API"),
-            ("endereco_retrieve", "Pode recuperar um registro Endereco na API"),
-            ("endereco_update", "Pode atualizar Endereco na API"),
-            ("endereco_partial_update", "Pode atualizar parcialmente Endereco na API"),
-            ("endereco_create", "Pode criar Enderecos na API"),
-            ("endereco_destroy", "Pode destruir Enderecos na API"), 
-        ]
-
 
 class Convenio(models.Model):
     id = models.BigAutoField(primary_key=True)
@@ -48,16 +38,6 @@ class Convenio(models.Model):
 
     def __str__(self) -> str:
         return self.nome
-
-    class Meta:
-        permissions = [
-            ("convenio_list", "Pode Listar todos Convenios na API"),
-            ("convenio_retrieve", "Pode recuperar um registro Convenio na API"),
-            ("convenio_update", "Pode atualizar Convenio na API"),
-            ("convenio_partial_update", "Pode atualizar parcialmente Convenio na API"),
-            ("convenio_create", "Pode criar Convenio na API"),
-            ("convenio_destroy", "Pode destruir Convenio na API"),
-        ]
 
 
 class Paciente(models.Model): 
@@ -77,16 +57,6 @@ class Paciente(models.Model):
     def __str__(self) -> str:
         return f"{self.nome} {self.sobrenome}"
 
-    class Meta:
-        permissions = [
-            ("paciente_list", "Pode Listar todos pacientes na API"),
-            ("paciente_retrieve", "Pode recuperar um registro de paciente na API"),
-            ("paciente_update", "Pode atualizar paciente na API"),
-            ("paciente_partial_update", "Pode atualizar parcialmente um paciente na API"),
-            ("paciente_create", "Pode criar paciente na API"),
-            ("paciente_destroy", "Pode destruir paciente na API"),
-        ]
-
 
 class Profissional(models.Model):
     id = models.BigAutoField(primary_key=True) 
@@ -101,15 +71,6 @@ class Profissional(models.Model):
     def __str__(self) -> str:
         return f"{self.nome} {self.sobrenome}"
 
-    class Meta:
-        permissions = [
-            ("profissional_list", "Pode Listar todos Profissionais na API"),
-            ("profissional_retrieve", "Pode recuperar um registro Profissional na API"),
-            ("profissional_update", "Pode atualizar Profissional na API"),
-            ("profissional_partial_update", "Pode atualizar parcialmente Prrofissional na API"),
-            ("profissional_create", "Pode criar Profissionais na API"),
-            ("profissional_destroy", "Pode destruir Profissionais na API"),
-        ]
 
 class HorariosAtendimento(models.Model):
     id = models.BigAutoField(primary_key=True)
@@ -130,16 +91,6 @@ class HorariosAtendimento(models.Model):
 
     def __str__(self) -> str:
         return f"{self.dia_da_semana}: {self.inicio}-{self.fim}"
-    
-    class Meta:
-        permissions = [
-            ("horario_atendimento_list", "Pode Listar todos Horarios de atendimento na API"),
-            ("horario_atendimento_retrieve", "Pode recuperar um registro Horarios de atendimento na API"),
-            ("horario_atendimento_update", "Pode atualizar Horarios de atendimento na API"),
-            ("horario_atendimento_partial_update", "Pode atualizar parcialmente Horarios de atendimento na API"),
-            ("horario_atendimento_create", "Pode criar Horarios de atendimento na API"),
-            ("horario_atendimento_destroy", "Pode destruir Horarios de atendimento na API"),
-        ]
 
 
 class Procedimento(models.Model):
@@ -147,16 +98,6 @@ class Procedimento(models.Model):
     nome = models.CharField(max_length=128, validators=[validade_char_lower_than_128], unique=True)
     def __str__(self) -> str:
         return self.nome
-    
-    class Meta:
-        permissions = [
-            ("procedimento_list", "Pode Listar todos procedimentos na API"),
-            ("procedimento_retrieve", "Pode recuperar um registro procedimentos na API"),
-            ("procedimento_update", "Pode atualizar procedimentos na API"),
-            ("procedimento_partial_update", "Pode atualizar parcialmente procedimentos na API"),
-            ("procedimento_create", "Pode criar procedimentos na API"),
-            ("procedimento_destroy", "Pode destruir procedimentos na API"),
-        ]
 
 
 class ProfissionalProcedimento(models.Model):
@@ -167,16 +108,6 @@ class ProfissionalProcedimento(models.Model):
 
     def __str__(self) -> str:
         return f"{self.procedimento_fk} {self.profissional_fk}"
-    
-    class Meta:
-        permissions = [
-            ("profissional_procedimento_list", "Pode Listar todos Profissional_procedimento na API"),
-            ("profissional_procedimento_retrieve", "Pode recuperar um registro Profissional_procedimento na API"),
-            ("profissional_procedimento_update", "Pode atualizar Profissional_procedimento na API"),
-            ("profissional_procedimento_partial_update", "Pode atualizar parcialmente Profissional_procedimento na API"),
-            ("profissional_procedimento_create", "Pode criar Profissional_procedimento na API"),
-            ("profissional_procedimento_destroy", "Pode destruir Profissional_procedimento na API"),
-        ]
 
 
 class SolicitacaoAgendamento(models.Model):
@@ -202,16 +133,6 @@ class SolicitacaoAgendamento(models.Model):
     
     def __str__(self) -> str:
         return f"{self.data_consulta} - {self.paciente_fk} - {self.profissional_fk}"
-    
-    class Meta:
-        permissions = [
-            ("solicitacao_agendamento_list", "Pode Listar todos Solicitacao_agendamento na API"),
-            ("solicitacao_agendamento_retrieve", "Pode recuperar um registro Solicitacao_agendamento na API"),
-            ("solicitacao_agendamento_update", "Pode atualizar Solicitacao_agendamento na API"),
-            ("solicitacao_agendamento_partial_update", "Pode atualizar parcialmente Solicitacao_agendamento na API"),
-            ("solicitacao_agendamento_create", "Pode criar Solicitacao_agendamento na API"),
-            ("solicitacao_agendamento_destroy", "Pode destruir Solicitacao_agendamento na API"),
-        ]
 
 
 class Prontuario(models.Model): 
@@ -221,13 +142,3 @@ class Prontuario(models.Model):
 
     def __str__(self) -> str:
         return f"Prontuario: Dr(a) {self.profissional_fk} - Paciente {self.paciente_fk}"
-    
-    class Meta:
-        permissions = [
-            ("prontuario_list", "Pode Listar todos prontuarios na API"),
-            ("prontuario_retrieve", "Pode recuperar um registro prontuario na API"),
-            ("prontuario_update", "Pode atualizar Prontuario na API"),
-            ("prontuario_partial_update", "Pode atualizar parcialmente Prontuario na API"),
-            ("prontuario_create", "Pode criar Prontuario na API"),
-            ("prontuario_destroy", "Pode destruir Prontuario na API"),
-        ]
