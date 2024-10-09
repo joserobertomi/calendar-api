@@ -3,8 +3,16 @@ from .validators import *
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 from .utils.choices import BRAZIL_STATES, REGISTER_TYPES, WEEK_DAYS
+from django.contrib.auth.models import AbstractUser
 # Create your models here.
 
+class CustomUser(AbstractUser):
+    # Adicione o novo campo específico
+    is_admin = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.username
+    
 class Endereco(models.Model):
     id = models.BigAutoField(primary_key=True)
     cep = models.CharField(max_length=8, validators=[validate_cep])

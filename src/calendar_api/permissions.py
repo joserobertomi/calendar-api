@@ -7,4 +7,4 @@ class IsAdminOnly(BasePermission):
     
     def has_permission(self, request, view):
         # Verifica se o usuário está autenticado e é um superusuário (admin)
-        return request.user and request.user.is_authenticated and request.user.is_staff
+        return request.user and request.user.is_authenticated and request.user.is_admin
