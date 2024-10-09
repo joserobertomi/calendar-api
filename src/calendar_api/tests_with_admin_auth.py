@@ -11,7 +11,7 @@ class ApiTestCase(APITestCase):
         self.user = get_user_model().objects.create_user(
             username='admin',
             password='admin', 
-            is_staff=True 
+            is_admin=True 
         )
         self.client.force_authenticate(user=self.user)
 

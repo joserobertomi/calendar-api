@@ -80,6 +80,8 @@ DJOSER = {
     'TOKEN_MODEL': None,
 }
 
+AUTH_USER_MODEL = 'calendar_api.CustomUser'
+
 ROOT_URLCONF = 'mydjango.urls'
 
 TEMPLATES = [
