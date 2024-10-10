@@ -12,7 +12,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Build the Docker image
-        run: docker build . --file .compose/django/Dockerfile --tag ${{ secrets.DOCKERHUB_USERNAME }}/calendar_api:latest
+        run: docker build . --file .docker-compose.yml --tag ${{ secrets.DOCKERHUB_USERNAME }}/calendar_api:latest
         
       - name: run docker-compose.debug for tests
         run: docker compose -f docker-compose.debug.yml up -d
