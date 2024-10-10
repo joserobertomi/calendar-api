@@ -1,0 +1,44 @@
+ 
+name: Docker Image CI Produção
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  docker:
+    name: build da imagem e push para o docker hub
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Build the Docker image
+        run: docker build . --file Dockerfile.dev --tag ${{ secrets.DOCKERHUB_USERNAME }}/calendar_api:latest
+        
+      - name: run docker-compose.debug for tests
+        run: docker compose -f docker-compose.debug.yml up -d
+
+      - name: Run Tests
+        run: docker exec -it dz01 python manage.py test -v 0
+
+      - name: setando docker buildx
+        uses: docker/setup-buildx-action@v3
+  
+      - name: logando no docker hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+
+      - name: extract metadata
+        id: meta
+        uses: docker/metadata-action@98669ae865ea3cffbcbaa878cf57c20bbf1c6c38
+        with:
+          images: ${{ secrets.DOCKERHUB_USERNAME }}/calendar_api:latest
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          file: ./Dockerfile.dev
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/calendar_api:latest
