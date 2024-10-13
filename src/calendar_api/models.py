@@ -1,152 +1,30 @@
-from django.db import models
-from .validators import *
-from django.core.exceptions import ValidationError
-from django.utils.translation import gettext_lazy as _
-from .utils.choices import BRAZIL_STATES, REGISTER_TYPES, WEEK_DAYS
-from django.contrib.auth.models import AbstractUser
-# Create your models here.
-
-class CustomUser(AbstractUser):
-    # Adicione o novo campo específico
-    is_admin = models.BooleanField(default=False)
-
-    def __str__(self):
-        return self.username
-    
-class Endereco(models.Model):
-    id = models.BigAutoField(primary_key=True)
-    cep = models.CharField(max_length=8, validators=[validate_cep])
-    rua = models.CharField(max_length=32, validators=[validade_char_lower_than_32])
-    bairro = models.CharField(max_length=32, validators=[validade_char_lower_than_32])
-    numero = models.IntegerField(null=True, blank=True, validators=[validate_integer])
-    quadra_lote = models.CharField(null=True, blank=True, max_length=16, validators=[validade_char_lower_than_16])
-    cidade = models.CharField(max_length=32, validators=[validade_char_lower_than_32])
-    estado = models.CharField(max_length=2, choices=BRAZIL_STATES, validators=[validate_state])
-    complemento = models.CharField(max_length=32, validators=[validade_char_lower_than_32])
-
-    def clean(self):
-        # Chama a implementação original da superclasse
-        super().clean()
-        # Verifica se o tempo de início é posterior ao de fim
-        if not self.numero and not self.quadra_lote:
-            raise ValidationError(
-                _("ERROR - Um dos campos numero ou quadra e lote deve existir")
-            )
-
-    def __str__(self) -> str:
-        if self.numero:
-            return (f"{self.numero}, {self.bairro}, {self.cidade}")
-        return (f"{self.quadra_lote}, {self.bairro}, {self.cidade}")
+from calendar_api.calendar_models.user import *
+from calendar_api.calendar_models.solicitacao_agendamento import *
+from calendar_api.calendar_models.prontuario import *
+from calendar_api.calendar_models.profissional import *
+from calendar_api.calendar_models.profissional_procedimento import *
+from calendar_api.calendar_models.procedimento import *
+from calendar_api.calendar_models.paciente import *
+from calendar_api.calendar_models.horario_atendimento import *
+from calendar_api.calendar_models.endereco import *
+from calendar_api.calendar_models.convenio import *
 
 
-class Convenio(models.Model):
-    id = models.BigAutoField(primary_key=True)
-    nome = models.CharField(max_length=32, validators=[validade_char_lower_than_32])
-    inscricao = models.CharField(max_length=64, validators=[validade_char_lower_than_64])
-
-    def __str__(self) -> str:
-        return self.nome
 
 
-class Paciente(models.Model): 
-    id = models.BigAutoField(primary_key=True) 
-    nome = models.CharField(max_length=32, validators=[validade_char_lower_than_32])
-    sobrenome = models.CharField(max_length=32, validators=[validade_char_lower_than_32])
-    cpf = models.CharField(max_length=11, unique=True, validators=[validate_cpf])
-    rg = models.CharField(max_length=9, unique=True, validators=[validate_rg])
-    orgao_expeditor = models.CharField(max_length=16, validators=[validade_char_lower_than_16])
-    sexo = models.CharField(max_length=1, choices=(('F', 'Feminino'), ('M', 'Masculino')))
-    celular = models.CharField(max_length=11, validators=[validate_phone])
-    email = models.EmailField(validators=[checkDns])
-    nascimento = models.DateField(validators=[validate_date_not_130_years_later, validate_date_not_newer_than_today])
-    endereco_fk = models.ForeignKey(Endereco, null=True, blank=True, on_delete=models.SET_NULL)
-    convenio_fk = models.ForeignKey(Convenio, null=True, blank=True, on_delete=models.SET_NULL)
-
-    def __str__(self) -> str:
-        return f"{self.nome} {self.sobrenome}"
 
 
-class Profissional(models.Model):
-    id = models.BigAutoField(primary_key=True) 
-    nome = models.CharField(max_length=32, validators=[validade_char_lower_than_32])
-    sobrenome = models.CharField(max_length=32, validators=[validade_char_lower_than_32])
-    cpf = models.CharField(max_length=11, unique=True, validators=[validate_cpf])
-    uf_registro = models.CharField(max_length=2, choices=BRAZIL_STATES, validators=[validate_state])
-    n_registro = models.PositiveIntegerField(validators=[validate_integer, validate_grater_than_1])
-    tipo_registro = models.CharField(max_length=8, choices=REGISTER_TYPES, validators=[validate_registers])
-    email = models.EmailField(unique=True, validators=[checkDns])
-
-    def __str__(self) -> str:
-        return f"{self.nome} {self.sobrenome}"
 
 
-class HorariosAtendimento(models.Model):
-    id = models.BigAutoField(primary_key=True)
-    dia_da_semana = models.CharField(choices=WEEK_DAYS, max_length=3, validators=[validate_days_of_week])
-    inicio = models.TimeField()
-    fim = models.TimeField()
-    profissional_fk = models.ForeignKey(Profissional, null=True, on_delete=models.CASCADE)
-
-    def clean(self):
-        # Chama a implementação original da superclasse
-        super().clean()
-
-        # Verifica se o tempo de início é posterior ao de fim
-        if self.inicio and self.fim and self.inicio > self.fim:
-            raise ValidationError(
-                _("ERROR - The finish time must be after the start time.")
-            )
-
-    def __str__(self) -> str:
-        return f"{self.dia_da_semana}: {self.inicio}-{self.fim}"
 
 
-class Procedimento(models.Model):
-    id = models.BigAutoField(primary_key=True)
-    nome = models.CharField(max_length=128, validators=[validade_char_lower_than_128], unique=True)
-    def __str__(self) -> str:
-        return self.nome
 
 
-class ProfissionalProcedimento(models.Model):
-    id = models.BigAutoField(primary_key=True)
-    profissional_fk = models.ForeignKey(Profissional, null=True, on_delete=models.CASCADE)
-    procedimento_fk = models.ForeignKey(Procedimento, null=True, on_delete=models.SET_NULL)
-    tempo_duracao = models.DurationField()
-
-    def __str__(self) -> str:
-        return f"{self.procedimento_fk} {self.profissional_fk}"
 
 
-class SolicitacaoAgendamento(models.Model):
-    
-    id = models.BigAutoField(primary_key=True)
-    data_consulta = models.DateField()
-    hora_inicio_consulta = models.TimeField()
-    #hora_fim_consulta = models.TimeField(blank=True, null=True, default=None) # * PROPERTY
-    #envio_confirmacao_paciente = models.DateTimeField(blank=True, null=True) # * PROPERTY
-    profissional_fk = models.ForeignKey(Profissional, null=True, on_delete=models.SET_NULL)
-    procedimento_fk = models.ForeignKey(Procedimento, null=True, on_delete=models.SET_NULL)
-    paciente_fk = models.ForeignKey(Paciente, null=True, on_delete=models.SET_NULL)
-
-    # TODO fazer o hora_fim_consulta como propertys da classe
-    @property
-    def hora_fim_consulta(self):
-        duracao = ProfissionalProcedimento.objects.filter(
-            profissional_fk=self.profissional_fk, 
-            procedimento_fk=self.procedimento_fk,
-        ).values('tempo_duracao').first()['tempo_duracao']
-        
-        return self.hora_inicio_consulta + duracao
-    
-    def __str__(self) -> str:
-        return f"{self.data_consulta} - {self.paciente_fk} - {self.profissional_fk}"
 
 
-class Prontuario(models.Model): 
-    texto =  models.TextField()
-    profissional_fk =  models.ForeignKey(Profissional, on_delete=models.CASCADE)
-    paciente_fk =  models.ForeignKey(Paciente, on_delete=models.CASCADE)
 
-    def __str__(self) -> str:
-        return f"Prontuario: Dr(a) {self.profissional_fk} - Paciente {self.paciente_fk}"
+
+
+
