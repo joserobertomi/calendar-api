@@ -18,13 +18,24 @@ class Endereco(models.Model):
     def clean(self):
         # Chama a implementação original da superclasse
         super().clean()
-        # Verifica se o tempo de início é posterior ao de fim
+        # Verifica se pelo menos um dos campos numero ou quadra_lote está preenchido
         if not self.numero and not self.quadra_lote:
             raise ValidationError(
-                _("ERROR - Um dos campos numero ou quadra e lote deve existir")
+                "ERROR - Um dos campos número ou quadra/lote deve existir."
             )
 
-    def __str__(self) -> str:
+    def __str__(self):
         if self.numero:
-            return (f"{self.numero}, {self.bairro}, {self.cidade}")
-        return (f"{self.quadra_lote}, {self.bairro}, {self.cidade}")
+            return f"{self.numero}, {self.bairro}, {self.cidade}"
+        return f"{self.quadra_lote}, {self.bairro}, {self.cidade}"
+
+    class Meta:
+        permissions = [
+            ("endereco_create", "Pode criar endereços"),
+            ("endereco_list", "Pode listar endereços"),
+            ("endereco_retrieve", "Pode recuperar um endereço"),
+            ("endereco_update", "Pode atualizar endereços"),
+            ("endereco_partial_update", "Pode atualizar parcialmente endereços"),
+            ("endereco_destroy", "Pode destruir endereços"),
+        ]
+        managed = True

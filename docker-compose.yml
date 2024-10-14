@@ -30,6 +30,8 @@ services:
       - ./src:/src
     expose:
       - "8000"
+    links:
+      - redis
     env_file:
       - ./.envs/.django
     networks:
@@ -44,6 +46,13 @@ services:
     volumes:
       - local_postgres_data:/var/lib/postgresql/data
       - local_postgres_data_backups:/backups
+    networks:
+      - djangonetwork
+  redis:
+    image: redis:alpine
+    container_name: rz01
+    ports:
+      - "6379:6379"
     networks:
       - djangonetwork
 

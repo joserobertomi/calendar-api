@@ -14,6 +14,7 @@ from .views import (
     ProcedimentoViewSet, 
     HorariosAtendimentoViewSet, 
     ProntuarioViewSet, 
+    UserViewSet
 )
 
 # Cria o roteador padrão
@@ -29,6 +30,7 @@ router.register(r'profissional-procedimento', ProfissionalProcedimentoViewSet)
 router.register(r'procedimento', ProcedimentoViewSet)
 router.register(r'horarios-atendimento', HorariosAtendimentoViewSet)
 router.register(r'prontuario', ProntuarioViewSet)
+router.register(r'users',UserViewSet)
 
 # Inclui as URLs geradas pelo roteador no padrão de rotas da aplicação
 urlpatterns = [

@@ -2,7 +2,7 @@ from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 from re import match 
 from datetime import date, timedelta
-import dns.resolver
+from dns.resolver import resolve, NXDOMAIN, LifetimeTimeout, NoAnswer
 
 STATES = [
     'AC', 'AL', 'AM', 'AP', 'BA', 'CE', 'DF', 'ES', 'GO', 
@@ -13,15 +13,18 @@ DAYS_OF_WEEK = ['2a', '3a', '4a', '5a', '6a', 'sab', 'dom']
 REGISTERS = ['CRM', 'CRBM', 'CRO', 'COREN', 'CRF', 'CRN'] 
 
 def checkDns(email):
+    if '@' not in email:
+        raise ValidationError("O campo de e-mail deve possuir '@'.")
+
     domain = email.split('@')[1]
     try:
-        dns.resolver.resolve(domain, 'MX')
-    except dns.resolver.NXDOMAIN:
+        resolve(domain, 'MX')
+    except NXDOMAIN:
         raise ValidationError(f'O domínio {domain} não possui registros MX válidos.')
-    except dns.resolver.LifetimeTimeout:
-        raise ValidationError("Não foi possível contactar ao DNS")
-    except Exception as e:  # Captura qualquer outra exceção
-        raise ValidationError(f"Ocorreu um erro ao validar o domínio {domain}")
+    except LifetimeTimeout:
+        raise ValidationError("Não foi possível contatar o servidor DNS.")
+    except NoAnswer:
+        raise ValidationError(f"O domínio {domain} não tem uma resposta válida do servidor DNS para registros MX.")
 
 
 def validate_cpf(cpf: str) -> None:

@@ -19,8 +19,19 @@ class HorariosAtendimento(models.Model):
         # Verifica se o tempo de início é posterior ao de fim
         if self.inicio and self.fim and self.inicio > self.fim:
             raise ValidationError(
-                _("ERROR - The finish time must be after the start time.")
+                "ERROR - The finish time must be after the start time."
             )
 
-    def __str__(self) -> str:
+    def __str__(self):
         return f"{self.dia_da_semana}: {self.inicio}-{self.fim}"
+
+    class Meta:
+        permissions = [
+            ("horariosatendimento_create", "Pode criar horários de atendimento"),
+            ("horariosatendimento_list", "Pode listar horários de atendimento"),
+            ("horariosatendimento_retrieve", "Pode recuperar um horário de atendimento"),
+            ("horariosatendimento_update", "Pode atualizar horários de atendimento"),
+            ("horariosatendimento_partial_update", "Pode atualizar parcialmente horários de atendimento"),
+            ("horariosatendimento_destroy", "Pode destruir horários de atendimento"),
+        ]
+        managed = True

@@ -37,11 +37,11 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'calendar_api.apps.CalendarApiConfig',
+    'calendar_api',
     'celery',
     'bootstrap5',
     'rest_framework', 
-    'djoser', 
+    'rest_framework_simplejwt',
 ]
 
 MIDDLEWARE = [
